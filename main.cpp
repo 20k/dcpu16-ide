@@ -34,7 +34,7 @@ int main()
 
                 auto all_instr = dcpu::instruction_to_description();
 
-                for(auto i : all_instr)
+                /*for(auto i : all_instr)
                 {
                     std::string name = i["name"];
                     std::string desc = i["description"];
@@ -42,6 +42,40 @@ int main()
                     if(ImGui::MenuItem(name.c_str()))
                     {
                         ImGui::SetTooltip(desc.c_str());
+                    }
+                }*/
+
+                std::map<std::string, std::vector<nlohmann::json>> by_category;
+
+                for(auto& i : all_instr)
+                {
+                    std::string category = i["category"];
+
+                    by_category[category].push_back(i);
+                }
+
+                for(auto& i : by_category)
+                {
+                    if(ImGui::BeginMenu(i.first.c_str()))
+                    {
+                        for(nlohmann::json& dat : i.second)
+                        {
+                            std::string name = dat["name"];
+                            std::string desc = dat["description"];
+
+                            ImGui::MenuItem(name.c_str());
+
+                            if(ImGui::IsItemHovered())
+                            {
+                                ImGui::BeginTooltip();
+                                ImGui::TextUnformatted(desc.c_str());
+                                ImGui::EndTooltip();
+
+                                printf("Hi\n");
+                            }
+                        }
+
+                        ImGui::EndMenu();
                     }
                 }
 
