@@ -5,10 +5,32 @@
 
 namespace dcpu
 {
-    inline
-    const std::map<std::string, std::string>& instruction_to_description()
+    namespace instruction
     {
-        static std::map<std::string, std::string> instr
+        enum category
+        {
+            NONE = 0,
+            ARITHMETIC = 1,
+            CONTROLFLOW = 2,
+            SIGNED = 4,
+            UNSIGNED = 8,
+            LOGICAL = 16,
+            INTERRUPT = 32,
+            MULTIPROCESSOR = 64,
+            MISC = 64,
+        };
+
+        struct metadata
+        {
+            std::string desc;
+            category cat = instruction::NONE;
+        };
+    }
+
+    inline
+    const std::vector<std::pair<std::string, instruction::metadata>>& instruction_to_description()
+    {
+        static std::vector<std::pair<std::string, instruction::metadata>> instr
         {
              {"SET", "SET b, a : Sets b to a"},
              {"ADD", "ADD b, a : Sets b to b+a, sets EX to 0x0001 on overflow"},
@@ -43,7 +65,7 @@ namespace dcpu
              {"INT","INT a : Triggers a software interrupt with message a"},
              {"IAG","IAG a : Sets a to IA"},
              {"IAS","IAS a : Sets IA to a"},
-             {"RFI","TFI a : Disables interrupt queueing, pops A from the stack, then pops PC from the stack"},
+             {"RFI","RFI a : Disables interrupt queueing, pops A from the stack, then pops PC from the stack"},
              {"IAQ","IAQ a : If a is nonzero, interrupts will be added to the queue instead of triggered. If a is 0, interrupts will be triggered as normal again"},
              {"HWN","HWN a : Sets a to the number of connected hardware devices"},
              {"HWQ","HSQ a : Sets A, B, C, X, Y registers to information about hardware a. A+(B<<16) is a 32 bit word identifying the hardware id. C is hardware version. X+(Y<<16) is a 32bit word identifying the manufacturer"},
@@ -59,10 +81,16 @@ namespace dcpu
     inline
     std::string get_description_of_instruction(const std::string& in)
     {
-        const std::map<std::string, std::string>& mapping = instruction_to_description();
+        const std::vector<std::pair<std::string, std::string>>& mapping = instruction_to_description();
 
-        if(auto it = mapping.find(in); it != mapping.end())
-            return it->second;
+        //if(auto it = mapping.find(in); it != mapping.end())
+        //    return it->second;
+
+        for(auto& i : mapping)
+        {
+            if(i.first == in)
+                return i.second;
+        }
 
         return "No such instruction";
     }

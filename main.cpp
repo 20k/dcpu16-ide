@@ -24,13 +24,23 @@ int main()
     {
         win.poll();
 
-        ImGui::Begin("Hello");
+        ImGui::Begin("Hello", nullptr, ImGuiWindowFlags_MenuBar);
 
         if(ImGui::BeginMenuBar())
         {
-            if(ImGui::BeginMenu("Instructions"))
+            if(ImGui::BeginMenu("Reference"))
             {
-                ImGui::MenuItem("Test");
+                //ImGui::MenuItem("Test");
+
+                const auto& all_instr = dcpu::instruction_to_description();
+
+                for(const auto& i : all_instr)
+                {
+                    if(ImGui::MenuItem(i.first.c_str()))
+                    {
+                        ImGui::SetTooltip(i.second.c_str());
+                    }
+                }
 
                 ImGui::EndMenu();
             }
