@@ -10,5 +10,24 @@
 
 int main()
 {
+    render_settings sett;
+    sett.width = 800;
+    sett.height = 600;
+
+    render_window win(sett, "DCPU16-IDE");
+
+    while(!win.should_close())
+    {
+        win.poll();
+
+        ImGui::Begin("Hello");
+
+        ImGui::Text("Hi");
+
+        ImGui::End();
+
+        win.display();
+    }
+
     return 0;
 }
