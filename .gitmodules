@@ -10,3 +10,6 @@
 [submodule "deps/networking"]
 	path = deps/networking
 	url = https://github.com/20k/clientservernetworking
+[submodule "deps/imguicolortextedit"]
+	path = deps/imguicolortextedit
+	url = https://github.com/BalazsJako/ImGuiColorTextEdit
