@@ -70,8 +70,6 @@ int main()
                                 ImGui::BeginTooltip();
                                 ImGui::TextUnformatted(desc.c_str());
                                 ImGui::EndTooltip();
-
-                                printf("Hi\n");
                             }
                         }
 
