@@ -13,8 +13,8 @@
 int main()
 {
     render_settings sett;
-    sett.width = 800;
-    sett.height = 600;
+    sett.width = 1200;
+    sett.height = 1000;
 
     render_window win(sett, "DCPU16-IDE");
 
@@ -32,13 +32,16 @@ int main()
             {
                 //ImGui::MenuItem("Test");
 
-                const auto& all_instr = dcpu::instruction_to_description();
+                auto all_instr = dcpu::instruction_to_description();
 
-                for(const auto& i : all_instr)
+                for(auto i : all_instr)
                 {
-                    if(ImGui::MenuItem(i.first.c_str()))
+                    std::string name = i["name"];
+                    std::string desc = i["description"];
+
+                    if(ImGui::MenuItem(name.c_str()))
                     {
-                        ImGui::SetTooltip(i.second.c_str());
+                        ImGui::SetTooltip(desc.c_str());
                     }
                 }
 
