@@ -13,3 +13,9 @@
 [submodule "deps/imguicolortextedit"]
 	path = deps/imguicolortextedit
 	url = https://github.com/BalazsJako/ImGuiColorTextEdit
+[submodule "deps/dcpu16-sim"]
+	path = deps/dcpu16-sim
+	url = https://github.com/20k/dcpu16-sim
+[submodule "deps/dcpu16-asm"]
+	path = deps/dcpu16-asm
+	url = https://github.com/20k/dcpu16-asm

@@ -7,6 +7,7 @@
 //#include "window_context.hpp"
 #include <toolkit/render_window.hpp>
 #include <vec/vec.hpp>
+#include <imguicolortextedit/TextEditor.h>
 
 int main()
 {
@@ -16,13 +17,15 @@ int main()
 
     render_window win(sett, "DCPU16-IDE");
 
+    TextEditor edit;
+
     while(!win.should_close())
     {
         win.poll();
 
         ImGui::Begin("Hello");
 
-        ImGui::Text("Hi");
+        edit.Render("Hithere");
 
         ImGui::End();
 
