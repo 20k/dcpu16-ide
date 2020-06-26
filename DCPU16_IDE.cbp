@@ -75,6 +75,9 @@
 			<Add option="-l:libbrotlienc-static.a" />
 			<Add option="-l:libbrotlicommon-static.a" />
 		</Linker>
+		<Unit filename="base_ide.hpp" />
+		<Unit filename="deps/dcpu16-asm/base_asm.hpp" />
+		<Unit filename="deps/dcpu16-sim/base_sim.hpp" />
 		<Unit filename="deps/imgui/examples/imgui_impl_glfw.cpp" />
 		<Unit filename="deps/imgui/examples/imgui_impl_opengl3.cpp" />
 		<Unit filename="deps/imgui/imgui.cpp" />
