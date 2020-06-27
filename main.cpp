@@ -26,6 +26,8 @@ int main()
 
         ImGui::Begin("Hello", nullptr, ImGuiWindowFlags_MenuBar);
 
+        ImGui::BeginChild("Child", ImVec2(400, 0));
+
         if(ImGui::BeginMenuBar())
         {
             if(ImGui::BeginMenu("Reference"))
@@ -84,6 +86,17 @@ int main()
         }
 
         edit.render();
+
+        ImGui::EndChild();
+
+        ImGui::SameLine();
+
+        if(ImGui::Button("Step"))
+        {
+
+        }
+
+        //ImGui::Text("Hello");
 
         ImGui::End();
 
