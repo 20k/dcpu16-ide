@@ -15,9 +15,12 @@
 
 /*SET X, 10
 
-loop:
+:loop
 SET Y, X
-IFA X, 0*/
+SUB X, 1
+IFA X, 0
+SET PC, loop
+SET Z, 1*/
 
 int main()
 {
