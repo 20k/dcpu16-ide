@@ -12,6 +12,7 @@
 #include <dcpu16-asm/base_asm.hpp>
 #include "base_ide.hpp"
 #include <SFML/System.hpp>
+#include <unordered_set>
 
 /*SET X, 10
 
@@ -19,6 +20,19 @@
 SET Y, X
 SUB X, 1
 IFA X, 0
+SET PC, loop
+SET Z, 1*/
+
+/*SET X, 10
+
+:loop
+
+SET Y, X
+SUB X, 1
+
+IFA X, 0
+
+
 SET PC, loop
 SET Z, 1*/
 
@@ -34,6 +48,8 @@ int main()
     CPU c;
     dcpu::ide::editor edit;
     dcpu::ide::reference_card card;
+
+    stack_vector<uint16_t, MEM_SIZE> translation_map;
 
     while(!win.should_close())
     {
@@ -100,6 +116,28 @@ int main()
 
         ImGui::BeginChild("Child", ImVec2(400, 0));
 
+        {
+            std::unordered_set<int> current_pc;
+
+            int line = 0;
+            int seek_character = translation_map[c.regs[PC_REG]];
+
+            std::string seek = edit.edit.GetText();
+
+            while(seek_character < seek.size() && should_prune(seek[seek_character]))
+                seek_character++;
+
+            for(int i=0; i <= seek_character && i < seek.size(); i++)
+            {
+                if(seek[i] == '\n')
+                    line++;
+            }
+
+            current_pc.insert(line+1);
+
+            edit.edit.SetBreakpoints(current_pc);
+        }
+
         edit.render();
         card.render();
 
@@ -118,6 +156,8 @@ int main()
                 c = CPU();
                 c.load(rinfo_opt.value().mem, 0);
                 halted = false;
+
+                translation_map = rinfo_opt.value().translation_map;
             }
         }
 

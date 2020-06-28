@@ -32,7 +32,6 @@
 			<Add option="-Wall" />
 			<Add option="-std=c++20" />
 			<Add option="-fexceptions" />
-			<Add option="-I/mingw64/include/freetype2" />
 			<Add option="-DNET_CLIENT" />
 			<Add option="-DNO_COMPRESSION" />
 			<Add option="-DIMGUI_IMPL_OPENGL_LOADER_GLEW" />
@@ -43,6 +42,7 @@
 			<Add option="-DNO_OPENCL" />
 			<Add directory="deps/imgui" />
 			<Add directory="deps" />
+			<Add directory="C:/msys64/mingw64/include/freetype2" />
 		</Compiler>
 		<Linker>
 			<Add option="-lmingw32" />
@@ -68,7 +68,6 @@
 			<Add option="-ldbgeng" />
 			<Add option="-lwinmm" />
 			<Add option="-l:libcrypto.a" />
-			<Add option="-lbacktrace" />
 			<Add option="-lUsp10" />
 			<Add option="-lgdi32" />
 			<Add option="-lws2_32" />
@@ -93,7 +92,6 @@
 		<Unit filename="deps/toolkit/fs_helpers.cpp" />
 		<Unit filename="deps/toolkit/opencl.cpp" />
 		<Unit filename="deps/toolkit/render_window.cpp" />
-		<Unit filename="deps/toolkit/stacktrace.cpp" />
 		<Unit filename="deps/toolkit/texture.cpp" />
 		<Unit filename="main.cpp" />
 		<Extensions>
