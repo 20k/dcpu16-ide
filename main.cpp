@@ -11,18 +11,26 @@
 #include <dcpu16-sim/base_sim.hpp>
 #include <dcpu16-asm/base_asm.hpp>
 #include "base_ide.hpp"
+#include <SFML/System.hpp>
+
+/*SET X, 10
+
+loop:
+SET Y, X
+IFA X, 0*/
 
 int main()
 {
     render_settings sett;
     sett.width = 1200;
-    sett.height = 1000;
+    sett.height = 800;
 
     render_window win(sett, "DCPU16-IDE");
 
     bool halted = false;
     CPU c;
     dcpu::ide::editor edit;
+    dcpu::ide::reference_card card;
 
     while(!win.should_close())
     {
@@ -90,6 +98,7 @@ int main()
         ImGui::BeginChild("Child", ImVec2(400, 0));
 
         edit.render();
+        card.render();
 
         ImGui::EndChild();
 
@@ -133,6 +142,8 @@ int main()
         //ImGui::Text("Hello");
 
         ImGui::End();
+
+        sf::sleep(sf::milliseconds(1));
 
         win.display();
     }
