@@ -36,6 +36,37 @@ IFA X, 0
 SET PC, loop
 SET Z, 1*/
 
+/*SET X, 10
+
+:loop
+
+SET Y, X
+SUB X, 1
+SET Z 6553
+
+IFA X, 0
+
+
+SET PC, loop
+SET Z, 1*/
+
+void register_editor(const std::string& name, uint16_t& val)
+{
+    int ival = val;
+
+    ImGui::Text(name.c_str());
+
+    ImGui::SameLine();
+
+    ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth());
+
+    //ImGui::PushItemWidth(ImGui::CalcTextSize("65535").x*4 + 40);
+
+    ImGui::InputInt(("##" + name).c_str(), &ival);
+
+    val = ival;
+}
+
 int main()
 {
     render_settings sett;
@@ -167,18 +198,18 @@ int main()
                 halted = halted || c.step();
         }
 
-        ImGui::Text("A: %i", c.regs[A_REG]);
-        ImGui::Text("B: %i", c.regs[B_REG]);
-        ImGui::Text("C: %i", c.regs[C_REG]);
-        ImGui::Text("X: %i", c.regs[X_REG]);
-        ImGui::Text("Y: %i", c.regs[Y_REG]);
-        ImGui::Text("Z: %i", c.regs[Z_REG]);
-        ImGui::Text("I: %i", c.regs[I_REG]);
-        ImGui::Text("J: %i", c.regs[J_REG]);
-        ImGui::Text("PC: %i", c.regs[PC_REG]);
-        ImGui::Text("SP: %i", c.regs[SP_REG]);
-        ImGui::Text("EX: %i", c.regs[EX_REG]);
-        ImGui::Text("IA: %i", c.regs[IA_REG]);
+        register_editor("A:", c.regs[A_REG]);
+        register_editor("B:", c.regs[B_REG]);
+        register_editor("C:", c.regs[C_REG]);
+        register_editor("X:", c.regs[X_REG]);
+        register_editor("Y:", c.regs[Y_REG]);
+        register_editor("Z:", c.regs[Z_REG]);
+        register_editor("I:", c.regs[I_REG]);
+        register_editor("J:", c.regs[J_REG]);
+        register_editor("PC:", c.regs[PC_REG]);
+        register_editor("SP:", c.regs[SP_REG]);
+        register_editor("EX:", c.regs[EX_REG]);
+        register_editor("IA:", c.regs[IA_REG]);
 
         ImGui::EndGroup();
 
