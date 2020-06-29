@@ -166,6 +166,8 @@ namespace dcpu
                 register_editor("EX:", c.regs[EX_REG]);
                 register_editor("IA:", c.regs[IA_REG]);
 
+                ImGui::Text("Cycles: %i", c.cycle_count);
+
                 ImGui::EndGroup();
 
                 ImGui::End();
