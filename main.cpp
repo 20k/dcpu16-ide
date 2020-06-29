@@ -98,6 +98,25 @@ int main()
             resolve_interprocessor_communication(cpus, cpu_fabric);
         }
 
+        if(ImGui::Button("Assemble All"))
+        {
+            cpu_fabric = fabric();
+
+            for(dcpu::ide::editor& edit : cpu_count)
+            {
+                auto [rinfo_opt, err] = assemble(edit.edit.GetText());
+
+                if(rinfo_opt.has_value())
+                {
+                    edit.c = CPU();
+                    edit.c.load(rinfo_opt.value().mem, 0);
+                    edit.halted = false;
+
+                    edit.translation_map = rinfo_opt.value().translation_map;
+                }
+            }
+        }
+
         ImGui::End();
 
         sf::sleep(sf::milliseconds(1));
