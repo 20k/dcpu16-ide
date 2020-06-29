@@ -78,7 +78,7 @@ namespace dcpu
             int id = gid++;
 
             TextEditor edit;
-            CPU c;
+            dcpu::sim::CPU c;
             stack_vector<uint16_t, MEM_SIZE> translation_map;
             bool halted = false;
 
@@ -139,7 +139,7 @@ namespace dcpu
 
                     if(rinfo_opt.has_value())
                     {
-                        c = CPU();
+                        c = dcpu::sim::CPU();
                         c.load(rinfo_opt.value().mem, 0);
                         halted = false;
 

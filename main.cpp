@@ -54,7 +54,7 @@ int main()
     //dcpu::ide::editor edit;
     dcpu::ide::reference_card card;
 
-    fabric cpu_fabric;
+    dcpu::sim::fabric cpu_fabric;
     std::vector<dcpu::ide::editor> cpu_count;
     cpu_count.emplace_back();
 
@@ -88,7 +88,7 @@ int main()
                 i.c.cycle_step(&cpu_fabric);
             }
 
-            stack_vector<CPU*, 64> cpus;
+            stack_vector<dcpu::sim::CPU*, 64> cpus;
 
             for(auto& i : cpu_count)
             {
@@ -100,7 +100,7 @@ int main()
 
         if(ImGui::Button("Assemble All"))
         {
-            cpu_fabric = fabric();
+            cpu_fabric = dcpu::sim::fabric();
 
             for(dcpu::ide::editor& edit : cpu_count)
             {
@@ -108,7 +108,7 @@ int main()
 
                 if(rinfo_opt.has_value())
                 {
-                    edit.c = CPU();
+                    edit.c = dcpu::sim::CPU();
                     edit.c.load(rinfo_opt.value().mem, 0);
                     edit.halted = false;
 
