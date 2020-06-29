@@ -62,6 +62,7 @@ int main()
     //dcpu::ide::editor edit;
     dcpu::ide::reference_card card;
 
+    fabric cpu_fabric;
     std::vector<dcpu::ide::editor> cpu_count;
     cpu_count.emplace_back();
 
@@ -92,7 +93,7 @@ int main()
         {
             for(auto& i : cpu_count)
             {
-                i.c.cycle_step();
+                i.c.cycle_step(&cpu_fabric);
             }
 
             stack_vector<CPU*, 64> cpus;
@@ -102,7 +103,7 @@ int main()
                 cpus.push_back(&i.c);
             }
 
-            resolve_interprocessor_communication(cpus);
+            resolve_interprocessor_communication(cpus, cpu_fabric);
         }
 
         ImGui::End();
