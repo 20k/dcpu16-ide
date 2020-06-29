@@ -59,17 +59,53 @@ int main()
 
     render_window win(sett, "DCPU16-IDE");
 
-    dcpu::ide::editor edit;
+    //dcpu::ide::editor edit;
     dcpu::ide::reference_card card;
 
-    std::vector<CPU> cpu_count;
+    std::vector<dcpu::ide::editor> cpu_count;
+    cpu_count.emplace_back();
 
     while(!win.should_close())
     {
         win.poll();
 
         card.render();
-        edit.render();
+        //edit.render();
+
+        for(auto& i : cpu_count)
+        {
+            i.render();
+        }
+
+        ImGui::Begin("Control Panel", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+
+        int num_cpus = cpu_count.size();
+
+        ImGui::InputInt("CPUs", &num_cpus);
+
+        if(num_cpus < 0)
+            num_cpus = 0;
+
+        cpu_count.resize(num_cpus);
+
+        if(ImGui::Button("Step All"))
+        {
+            for(auto& i : cpu_count)
+            {
+                i.c.cycle_step();
+            }
+
+            stack_vector<CPU*, 64> cpus;
+
+            for(auto& i : cpu_count)
+            {
+                cpus.push_back(&i.c);
+            }
+
+            resolve_interprocessor_communication(cpus);
+        }
+
+        ImGui::End();
 
         sf::sleep(sf::milliseconds(1));
 

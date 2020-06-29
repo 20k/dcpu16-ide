@@ -74,6 +74,9 @@ namespace dcpu
 
         struct editor
         {
+            static inline int gid = 0;
+            int id = gid++;
+
             TextEditor edit;
             CPU c;
             stack_vector<uint16_t, MEM_SIZE> translation_map;
@@ -96,7 +99,7 @@ namespace dcpu
 
             void render()
             {
-                ImGui::Begin("Hello");
+                ImGui::Begin((std::string("IDE") + std::to_string(id)).c_str());
 
                 ImGui::BeginChild("Child", ImVec2(400, 0));
 
@@ -122,7 +125,7 @@ namespace dcpu
                     edit.SetBreakpoints(current_pc);
                 }
 
-                edit.Render("IDE");
+                edit.Render((std::string("IDE") + std::to_string(id)).c_str());
 
                 ImGui::EndChild();
 
