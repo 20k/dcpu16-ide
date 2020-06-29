@@ -101,7 +101,7 @@ namespace dcpu
             {
                 ImGui::Begin((std::string("IDE") + std::to_string(id)).c_str());
 
-                ImGui::BeginChild("Child", ImVec2(400, 0));
+                ImGui::BeginChild(("Child" + std::to_string(id)).c_str(), ImVec2(400, 0));
 
                 {
                     std::unordered_set<int> current_pc;
@@ -125,7 +125,7 @@ namespace dcpu
                     edit.SetBreakpoints(current_pc);
                 }
 
-                edit.Render((std::string("IDE") + std::to_string(id)).c_str());
+                edit.Render((std::string("IDEW") + std::to_string(id)).c_str());
 
                 ImGui::EndChild();
 

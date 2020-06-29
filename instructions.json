@@ -24,8 +24,8 @@
 {"name":"IFU", "cycle":2, "class":"a", "opcode":23, "category":"control", "signed":true, "description":"IFU b, a : Performs next instruction only if b<a (signed)"},
 {"name":"ADX", "cycle":3, "class":"a", "opcode":26, "category":"arithmetic", "signed":false, "description":"ADX b, a : Sets b to b+a+EX, sets EX to 0x0001 on overflow, otherwise 0x0"},
 {"name":"SBX", "cycle":3, "class":"a", "opcode":27, "category":"arithmetic", "signed":false, "description":"SBX b, a : Sets b to b-a+EX, sets EX to 0xffff on overflow, otherwise 0x0"},
-{"name":"RCV", "cycle":1, "class":"a", "opcode":28, "category":"multiprocessor", "signed":false, "description":"RCV b, a : Sets b to a value received on the channel with identifier a, blocks until received"},
-{"name":"SND", "cycle":1, "class":"a", "opcode":29, "category":"multiprocessor", "signed":false, "description":"SND b, a : Sends the value b on the channel with identifier a, blocks until sent"},
+{"name":"RCV", "cycle":4, "class":"a", "opcode":28, "category":"multiprocessor", "signed":false, "description":"RCV b, a : Sets b to a value received on the channel with identifier a, blocks until received"},
+{"name":"SND", "cycle":4, "class":"a", "opcode":29, "category":"multiprocessor", "signed":false, "description":"SND b, a : Sends the value b on the channel with identifier a, blocks until sent"},
 {"name":"STI", "cycle":2, "class":"a", "opcode":30, "category":"arithmetic", "signed":false, "description":"STI b, a : Sets b to a, then increases I and J by 1"},
 {"name":"STD", "cycle":2, "class":"a", "opcode":31, "category":"arithmetic", "signed":false, "description":"STD b, a : Sets b to a, then decreases I and J by 1"},
 {"name":"JSR", "cycle":3, "class":"b", "opcode":1, "category":"stack", "signed":false, "description":"JSR a : Pushes the address of the next instruction to the stack, then sets PC to a"},
@@ -37,7 +37,7 @@
 {"name":"HWN", "cycle":2, "class":"b", "opcode":16, "category":"hardware", "signed":false, "description":"HWN a : Sets a to the number of connected hardware devices"},
 {"name":"HWQ", "cycle":4, "class":"b", "opcode":17, "category":"hardware", "signed":false, "description":"HSQ a : Sets A, B, C, X, Y registers to information about hardware a. A+(B<<16) is a 32 bit word identifying the hardware id. C is hardware version. X+(Y<<16) is a 32bit word identifying the manufacturer"},
 {"name":"HWI", "cycle":4, "class":"b", "opcode":18, "category":"hardware", "signed":false, "description":"HWI a : Sends an interrupt to hardware a"},
-{"name":"IFW", "cycle":2, "class":"b", "opcode":26, "category":"control", "signed":false, "description":"IFW a : Performs next instruction only if the channel identified by a has a value waiting to be written"},
-{"name":"IFR", "cycle":2, "class":"b", "opcode":27, "category":"control", "signed":false, "description":"IFR a : Performs next instruction only if the channel identified by a has a value waiting to be written"},
+{"name":"IFW", "cycle":3, "class":"b", "opcode":26, "category":"control", "signed":false, "description":"IFW a : Performs next instruction only if the channel identified by a has a value waiting to be written"},
+{"name":"IFR", "cycle":3, "class":"b", "opcode":27, "category":"control", "signed":false, "description":"IFR a : Performs next instruction only if the channel identified by a has a value waiting to be written"},
 {"name":"BRK", "cycle":1, "class":"c", "opcode":0, "category":"control", "signed":false, "description":"BRK : Terminates execution"}
 ]
