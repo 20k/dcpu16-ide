@@ -50,6 +50,7 @@ IFA X, 0
 SET PC, loop
 SET Z, 1*/
 
+///TODO: Communication channels
 void register_editor(const std::string& name, uint16_t& val)
 {
     int ival = val;
@@ -86,64 +87,7 @@ int main()
     {
         win.poll();
 
-        ImGui::Begin("Hello", nullptr, ImGuiWindowFlags_MenuBar);
-
-        if(ImGui::BeginMenuBar())
-        {
-            if(ImGui::BeginMenu("Reference"))
-            {
-                //ImGui::MenuItem("Test");
-
-                auto all_instr = dcpu::instruction_to_description();
-
-                /*for(auto i : all_instr)
-                {
-                    std::string name = i["name"];
-                    std::string desc = i["description"];
-
-                    if(ImGui::MenuItem(name.c_str()))
-                    {
-                        ImGui::SetTooltip(desc.c_str());
-                    }
-                }*/
-
-                std::map<std::string, std::vector<nlohmann::json>> by_category;
-
-                for(auto& i : all_instr)
-                {
-                    std::string category = i["category"];
-
-                    by_category[category].push_back(i);
-                }
-
-                for(auto& i : by_category)
-                {
-                    if(ImGui::BeginMenu(i.first.c_str()))
-                    {
-                        for(nlohmann::json& dat : i.second)
-                        {
-                            std::string name = dat["name"];
-                            std::string desc = dat["description"];
-
-                            ImGui::MenuItem(name.c_str());
-
-                            if(ImGui::IsItemHovered())
-                            {
-                                ImGui::BeginTooltip();
-                                ImGui::TextUnformatted(desc.c_str());
-                                ImGui::EndTooltip();
-                            }
-                        }
-
-                        ImGui::EndMenu();
-                    }
-                }
-
-                ImGui::EndMenu();
-            }
-
-            ImGui::EndMenuBar();
-        }
+        ImGui::Begin("Hello");
 
         ImGui::BeginChild("Child", ImVec2(400, 0));
 
@@ -198,14 +142,14 @@ int main()
                 halted = halted || c.step();
         }
 
-        register_editor("A:", c.regs[A_REG]);
-        register_editor("B:", c.regs[B_REG]);
-        register_editor("C:", c.regs[C_REG]);
-        register_editor("X:", c.regs[X_REG]);
-        register_editor("Y:", c.regs[Y_REG]);
-        register_editor("Z:", c.regs[Z_REG]);
-        register_editor("I:", c.regs[I_REG]);
-        register_editor("J:", c.regs[J_REG]);
+        register_editor("A: ", c.regs[A_REG]);
+        register_editor("B: ", c.regs[B_REG]);
+        register_editor("C: ", c.regs[C_REG]);
+        register_editor("X: ", c.regs[X_REG]);
+        register_editor("Y: ", c.regs[Y_REG]);
+        register_editor("Z: ", c.regs[Z_REG]);
+        register_editor("I: ", c.regs[I_REG]);
+        register_editor("J: ", c.regs[J_REG]);
         register_editor("PC:", c.regs[PC_REG]);
         register_editor("SP:", c.regs[SP_REG]);
         register_editor("EX:", c.regs[EX_REG]);
