@@ -1,18 +1,10 @@
 #include <imgui/imgui.h>
-#include <imgui/imgui_internal.h>
-#include <imgui/examples/imgui_impl_glfw.h>
-#include <imgui/examples/imgui_impl_opengl3.h>
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-//#include "window_context.hpp"
 #include <toolkit/render_window.hpp>
 #include <vec/vec.hpp>
-#include <imguicolortextedit/TextEditor.h>
 #include <dcpu16-sim/base_sim.hpp>
 #include <dcpu16-asm/base_asm.hpp>
 #include "base_ide.hpp"
 #include <SFML/System.hpp>
-#include <unordered_set>
 
 /*SET X, 10
 
