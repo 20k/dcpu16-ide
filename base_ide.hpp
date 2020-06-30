@@ -145,6 +145,10 @@ namespace dcpu
 
                         translation_map = rinfo_opt.value().translation_map;
                     }
+                    else
+                    {
+                        printf("Err %s\n", err.data());
+                    }
                 }
 
                 if(ImGui::Button("Step"))
