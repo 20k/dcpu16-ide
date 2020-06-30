@@ -42,7 +42,6 @@ IFA X, 0
 SET PC, loop
 SET Z, 1*/
 
-///TODO: Communication channelss
 int main()
 {
     render_settings sett;
