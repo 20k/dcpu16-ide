@@ -5,11 +5,6 @@
 #include <dcpu16-asm/base_asm.hpp>
 #include "base_ide.hpp"
 #include <SFML/System.hpp>
-#include <toml.hpp>
-
-#ifdef __WIN32__
-#include <windows.h>
-#endif // __WIN32__
 
 /*SET X, 10
 
@@ -52,6 +47,17 @@ int main(int argc, char* argv[])
     for(int i=0; i < argc; i++)
     {
         printf("ARG: %s\n", argv[i]);
+    }
+
+    std::optional<dcpu::ide::settings> toml_val;
+
+    if(argc > 1)
+    {
+        std::string toml_file = std::string(argv[1]);
+        dcpu::ide::settings sett;
+        sett.load(toml_file);
+
+        toml_val = sett;
     }
 
     render_settings sett;
@@ -113,7 +119,7 @@ int main(int argc, char* argv[])
 
             for(dcpu::ide::editor& edit : cpu_count)
             {
-                auto [rinfo_opt, err] = assemble(edit.edit.GetText());
+                auto [rinfo_opt, err] = assemble_fwd(edit.get_text());
 
                 if(rinfo_opt.has_value())
                 {
