@@ -5,6 +5,7 @@
 #include <dcpu16-asm/base_asm.hpp>
 #include "base_ide.hpp"
 #include <SFML/System.hpp>
+#include <toolkit/fs_helpers.hpp>
 
 /*SET X, 10
 
@@ -57,6 +58,11 @@ int main(int argc, char* argv[])
         dcpu::ide::settings sett;
         sett.load(toml_file);
 
+        for(auto& i : sett.files)
+        {
+            printf("File %s\n", i.c_str());
+        }
+
         toml_val = sett;
     }
 
@@ -71,7 +77,47 @@ int main(int argc, char* argv[])
 
     dcpu::sim::fabric cpu_fabric;
     std::vector<dcpu::ide::editor> cpu_count;
-    cpu_count.emplace_back();
+
+    if(toml_val.has_value())
+    {
+        dcpu::ide::settings& sett = toml_val.value();
+
+        cpu_count.resize(sett.files.size());
+
+        //for(dcpu::sim::CPU& c : cpu_count)
+
+        for(int i=0; i < (int)sett.files.size(); i++)
+        {
+            dcpu::ide::editor& edit = cpu_count[i];
+            std::string& file = sett.files[i];
+
+            std::string info = file::read(file, file::mode::TEXT);
+
+            while(info.size() > 0 && info.back() == '\0')
+                info.pop_back();
+
+            edit.set_text(info);
+
+            auto [rinfo_opt, err] = assemble_fwd(info);
+
+            if(rinfo_opt.has_value())
+            {
+                edit.c = dcpu::sim::CPU();
+                edit.c.load(rinfo_opt.value().mem, 0);
+                edit.halted = false;
+
+                edit.translation_map = rinfo_opt.value().translation_map;
+            }
+            else
+            {
+                printf("Err here %s\n", err.data());
+            }
+        }
+    }
+    else
+    {
+        cpu_count.emplace_back();
+    }
 
     while(!win.should_close())
     {

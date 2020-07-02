@@ -51,6 +51,7 @@ namespace dcpu
             void render();
 
             std::string get_text();
+            void set_text(const std::string& str);
         };
 
         struct reference_card
