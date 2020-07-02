@@ -7,6 +7,10 @@
 #include <SFML/System.hpp>
 #include <toml.hpp>
 
+#ifdef __WIN32__
+#include <windows.h>
+#endif // __WIN32__
+
 /*SET X, 10
 
 :loop
@@ -43,8 +47,13 @@ IFA X, 0
 SET PC, loop
 SET Z, 1*/
 
-int main()
+int main(int argc, char* argv[])
 {
+    for(int i=0; i < argc; i++)
+    {
+        printf("ARG: %s\n", argv[i]);
+    }
+
     render_settings sett;
     sett.width = 1200;
     sett.height = 800;

@@ -43,6 +43,9 @@
 				<Linker>
 					<Add option="-O2" />
 					<Add option="-s" />
+					<Add option="-static-libstdc++" />
+					<Add option="-static-libgcc" />
+					<Add option="-static" />
 					<Add option="-lmingw32" />
 					<Add option="-l:libssl.a" />
 					<Add option="-l:libglfw3.a" />
@@ -87,6 +90,7 @@
 			<Add directory="deps/imgui" />
 			<Add directory="deps" />
 			<Add directory="C:/msys64/mingw64/include/freetype2" />
+			<Add directory="deps/toml" />
 		</Compiler>
 		<Linker>
 			<Add option="-lmingw32" />
