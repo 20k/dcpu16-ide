@@ -5,6 +5,7 @@
 #include <dcpu16-asm/base_asm.hpp>
 #include "base_ide.hpp"
 #include <SFML/System.hpp>
+#include <toml.hpp>
 
 /*SET X, 10
 
