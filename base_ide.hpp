@@ -111,10 +111,10 @@ namespace dcpu
 
                     std::string seek = edit.GetText();
 
-                    while(seek_character < seek.size() && should_prune(seek[seek_character]))
+                    while(seek_character < (int)seek.size() && should_prune(seek[seek_character]))
                         seek_character++;
 
-                    if(seek_character < seek.size() && seek[seek_character] == ';')
+                    if(seek_character < (int)seek.size() && seek[seek_character] == ';')
                     {
                         size_t found = seek.find_first_of("\n", seek_character);
 
@@ -124,7 +124,7 @@ namespace dcpu
                         }
                     }
 
-                    for(int i=0; i <= seek_character && i < seek.size(); i++)
+                    for(int i=0; i <= seek_character && i < (int)seek.size(); i++)
                     {
                         if(seek[i] == '\n')
                             line++;
