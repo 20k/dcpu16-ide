@@ -109,7 +109,9 @@
 			<Add option="-lwinmm" />
 			<Add option="-lgdi32" />
 		</Linker>
+		<Unit filename="base_ide.cpp" />
 		<Unit filename="base_ide.hpp" />
+		<Unit filename="deps/dcpu16-asm/base_asm.cpp" />
 		<Unit filename="deps/dcpu16-asm/base_asm.hpp" />
 		<Unit filename="deps/dcpu16-sim/base_sim.hpp" />
 		<Unit filename="deps/imgui/examples/imgui_impl_glfw.cpp" />
