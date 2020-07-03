@@ -50,7 +50,7 @@ namespace dcpu
 
             void render();
 
-            std::string get_text();
+            std::string get_text() const;
             void set_text(const std::string& str);
         };
 

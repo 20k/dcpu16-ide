@@ -87,7 +87,7 @@ namespace dcpu::ide
     {
         ImGui::Begin((std::string("IDE") + std::to_string(id)).c_str());
 
-        //ImGui::BeginChild(("Child" + std::to_string(id)).c_str(), ImVec2(400, 0));
+        ImGui::BeginChild(("Child" + std::to_string(id)).c_str(), ImVec2(400, 0));
 
         {
             std::unordered_set<int> current_pc;
@@ -126,7 +126,7 @@ namespace dcpu::ide
 
         edit->Render((std::string("IDEW") + std::to_string(id)).c_str());
 
-        /*ImGui::EndChild();
+        ImGui::EndChild();
 
         ImGui::SameLine();
 
@@ -171,12 +171,12 @@ namespace dcpu::ide
 
         ImGui::Text("Cycles: %i", c.cycle_count);
 
-        ImGui::EndGroup();*/
+        ImGui::EndGroup();
 
         ImGui::End();
     }
 
-    std::string editor::get_text()
+    std::string editor::get_text() const
     {
         return edit->GetText();
     }
