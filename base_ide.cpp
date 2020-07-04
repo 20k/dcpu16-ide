@@ -12,7 +12,9 @@ void dcpu::ide::project::load(const std::string& str)
 
     project_data = file::read(project_file, file::mode::TEXT);
 
-    toml::value val = toml::parse(project_data);
+    std::istringstream is(project_data, std::ios_base::binary | std::ios_base::in);
+
+    toml::value val = toml::parse(is, project_file);
 
     assembly_files = toml::get<std::vector<std::string>>(val["files"]);
 
