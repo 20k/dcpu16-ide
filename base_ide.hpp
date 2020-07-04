@@ -11,6 +11,18 @@ namespace dcpu
 {
     namespace ide
     {
+        struct project
+        {
+            std::string project_file;
+            std::vector<std::string> assembly_files;
+
+            std::string project_data;
+            std::vector<std::string> assembly_data;
+
+            void load(const std::string& str);
+            void save();
+        };
+
         struct settings
         {
             std::vector<std::string> files;

@@ -4,6 +4,58 @@
 #include <nlohmann/json.hpp>
 #include <dcpu16-asm/base_asm.hpp>
 #include <toml.hpp>
+#include <toolkit/fs_helpers.hpp>
+
+void dcpu::ide::project::load(const std::string& str)
+{
+    project_file = str;
+
+    project_data = file::read(project_file, file::mode::TEXT);
+
+    toml::value val = toml::parse(project_data);
+
+    assembly_files = toml::get<std::vector<std::string>>(val["files"]);
+
+    assembly_data.clear();
+
+    for(auto& i : assembly_files)
+    {
+        assembly_data.push_back(file::read(i, file::mode::TEXT));
+    }
+}
+
+void dcpu::ide::project::save()
+{
+    file::rename(project_file, project_file + ".tempproj");
+
+    project_data = file::read(project_file + ".tempproj", file::mode::TEXT);
+
+    toml::value val;
+
+    try
+    {
+        val = toml::parse(project_data);
+    }
+    catch(...)
+    {
+
+    }
+
+    val["files"] = assembly_files;
+
+    std::string as_str = toml::format(val);
+
+    file::write_atomic(project_file, as_str, file::mode::TEXT);
+
+    file::remove(project_file + ".tempproj");
+
+    assert(assembly_files.size() == assembly_data.size());
+
+    for(int i=0; i < (int)assembly_files.size(); i++)
+    {
+        file::write_atomic(assembly_files[i], assembly_data[i], file::mode::TEXT);
+    }
+}
 
 nlohmann::json instruction_to_description()
 {
