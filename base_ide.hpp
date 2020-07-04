@@ -66,6 +66,16 @@ namespace dcpu
             void set_text(const std::string& str);
         };
 
+        struct project_instance
+        {
+            project proj;
+
+            std::vector<editor> editors;
+
+            void load(const std::string& file);
+            void save();
+        };
+
         struct reference_card
         {
             void render();

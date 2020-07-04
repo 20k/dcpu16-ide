@@ -57,6 +57,32 @@ void dcpu::ide::project::save()
     }
 }
 
+void dcpu::ide::project_instance::load(const std::string& file)
+{
+    proj = project();
+    proj.load(file);
+
+    editors.clear();
+
+    for(int i=0; i < (int)proj.assembly_data.size(); i++)
+    {
+        dcpu::ide::editor& edit = editors.emplace_back();
+        edit.set_text(proj.assembly_data[i]);
+    }
+}
+
+void dcpu::ide::project_instance::save()
+{
+    assert(editors.size() == proj.assembly_data.size());
+
+    for(int i=0; i < (int)editors.size(); i++)
+    {
+        proj.assembly_data[i] = editors[i].get_text();
+    }
+
+    proj.save();
+}
+
 nlohmann::json instruction_to_description()
 {
     static nlohmann::json data = nlohmann::json::parse(
