@@ -58,6 +58,8 @@ namespace dcpu
             stack_vector<uint16_t, MEM_SIZE> translation_map;
             bool halted = false;
 
+            std::string additional_info;
+
             editor();
 
             void render();
