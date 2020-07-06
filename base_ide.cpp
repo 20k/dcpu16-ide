@@ -5,6 +5,7 @@
 #include <dcpu16-asm/base_asm.hpp>
 #include <toml.hpp>
 #include <toolkit/fs_helpers.hpp>
+#include <iostream>
 
 void dcpu::ide::project::load(const std::string& str)
 {
@@ -177,7 +178,7 @@ namespace dcpu::ide
                 int line = 0;
                 int seek_character = translation_map[c.regs[PC_REG]];
 
-                std::string seek = edit->GetText();
+                std::string seek = get_text();
 
                 while(seek_character < (int)seek.size() && should_prune(seek[seek_character]))
                     seek_character++;
@@ -214,7 +215,7 @@ namespace dcpu::ide
 
         if(ImGui::Button("Assemble"))
         {
-            auto [rinfo_opt, err] = assemble_fwd(edit->GetText());
+            auto [rinfo_opt, err] = assemble_fwd(get_text());
 
             if(rinfo_opt.has_value())
             {
@@ -258,7 +259,12 @@ namespace dcpu::ide
 
     std::string editor::get_text() const
     {
-        return edit->GetText();
+        std::string str = edit->GetText();
+
+        if(str.size() > 0 && str.back() == '\n')
+            str.pop_back();
+
+        return str;
     }
 
     void editor::set_text(const std::string& str)
