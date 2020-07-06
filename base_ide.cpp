@@ -250,7 +250,7 @@ namespace dcpu::ide
         register_editor("EX:", c.regs[EX_REG]);
         register_editor("IA:", c.regs[IA_REG]);
 
-        ImGui::Text("Cycles: %i", c.cycle_count);
+        ImGui::Text(("Cycles: " + std::to_string(c.cycle_count)).c_str());
 
         ImGui::EndGroup();
 
