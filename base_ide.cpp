@@ -139,6 +139,25 @@ nlohmann::json instruction_to_description()
     return data;
 }
 
+void register_editor(const std::string& name, uint16_t& val)
+{
+    int ival = val;
+
+    ImGui::Text(name.c_str());
+
+    ImGui::SameLine();
+
+    //ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth());
+
+    //ImGui::PushItemWidth(ImGui::CalcTextSize("65535").x*4 + 40);
+
+    ImGui::PushItemWidth(100);
+
+    ImGui::InputInt(("##" + name).c_str(), &ival);
+
+    val = ival;
+}
+
 namespace dcpu::ide
 {
     void settings::load(const std::string& file)
@@ -167,49 +186,6 @@ namespace dcpu::ide
     void editor::render()
     {
         ImGui::Begin((std::string("IDE") + std::to_string(id)).c_str());
-
-        ImGui::BeginChild(("Child" + std::to_string(id)).c_str(), ImVec2(400, 0));
-
-        {
-            std::unordered_set<int> current_pc;
-
-            if(c.regs[PC_REG] < translation_map.size())
-            {
-                int line = 0;
-                int seek_character = translation_map[c.regs[PC_REG]];
-
-                std::string seek = get_text();
-
-                while(seek_character < (int)seek.size() && should_prune(seek[seek_character]))
-                    seek_character++;
-
-                if(seek_character < (int)seek.size() && seek[seek_character] == ';')
-                {
-                    size_t found = seek.find_first_of("\n", seek_character);
-
-                    if(found != std::string::npos)
-                    {
-                        seek_character = found + 1;
-                    }
-                }
-
-                for(int i=0; i <= seek_character && i < (int)seek.size(); i++)
-                {
-                    if(seek[i] == '\n')
-                        line++;
-                }
-
-                current_pc.insert(line+1);
-            }
-
-            edit->SetBreakpoints(current_pc);
-        }
-
-        edit->Render((std::string("IDEW") + std::to_string(id)).c_str());
-
-        ImGui::EndChild();
-
-        ImGui::SameLine();
 
         ImGui::BeginGroup();
 
@@ -253,6 +229,49 @@ namespace dcpu::ide
         ImGui::Text(("Cycles: " + std::to_string(c.cycle_count)).c_str());
 
         ImGui::EndGroup();
+
+        ImGui::SameLine();
+
+        ImGui::BeginChild(("Child" + std::to_string(id)).c_str());
+
+        {
+            std::unordered_set<int> current_pc;
+
+            if(c.regs[PC_REG] < translation_map.size())
+            {
+                int line = 0;
+                int seek_character = translation_map[c.regs[PC_REG]];
+
+                std::string seek = get_text();
+
+                while(seek_character < (int)seek.size() && should_prune(seek[seek_character]))
+                    seek_character++;
+
+                if(seek_character < (int)seek.size() && seek[seek_character] == ';')
+                {
+                    size_t found = seek.find_first_of("\n", seek_character);
+
+                    if(found != std::string::npos)
+                    {
+                        seek_character = found + 1;
+                    }
+                }
+
+                for(int i=0; i <= seek_character && i < (int)seek.size(); i++)
+                {
+                    if(seek[i] == '\n')
+                        line++;
+                }
+
+                current_pc.insert(line+1);
+            }
+
+            edit->SetBreakpoints(current_pc);
+        }
+
+        edit->Render((std::string("IDEW") + std::to_string(id)).c_str());
+
+        ImGui::EndChild();
 
         ImGui::End();
     }

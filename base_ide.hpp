@@ -31,24 +31,6 @@ namespace dcpu
             void load(const std::string& file);
         };
 
-        inline
-        void register_editor(const std::string& name, uint16_t& val)
-        {
-            int ival = val;
-
-            ImGui::Text(name.c_str());
-
-            ImGui::SameLine();
-
-            ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth());
-
-            //ImGui::PushItemWidth(ImGui::CalcTextSize("65535").x*4 + 40);
-
-            ImGui::InputInt(("##" + name).c_str(), &ival);
-
-            val = ival;
-        }
-
         struct editor
         {
             static inline int gid = 0;
