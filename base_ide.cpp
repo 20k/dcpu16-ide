@@ -6,6 +6,7 @@
 #include <toml.hpp>
 #include <toolkit/fs_helpers.hpp>
 #include <iostream>
+#include <GLFW/glfw3.h>
 
 void dcpu::ide::project::load(const std::string& str)
 {
@@ -81,6 +82,8 @@ void dcpu::ide::project_instance::save()
     for(int i=0; i < (int)editors.size(); i++)
     {
         proj.assembly_data[i] = editors[i].get_text();
+
+        editors[i].unsaved = false;
     }
 
     proj.save();
@@ -173,6 +176,7 @@ namespace dcpu::ide
         auto lang = TextEditor::LanguageDefinition::CPlusPlus();
         lang.mCaseSensitive = false;
         lang.mSingleLineComment = ";";
+        lang.mAutoIndentation = false;
 
         auto mapping = instruction_to_description();
 
@@ -186,9 +190,22 @@ namespace dcpu::ide
         edit->SetLanguageDefinition(lang);
     }
 
-    void editor::render()
+    void editor::render(project_instance& instance)
     {
-        ImGui::Begin((std::string("IDE") + std::to_string(id)).c_str());
+        std::string root_name = "IDE";
+
+        if(unsaved)
+            root_name += " (unsaved)";
+
+        ImGui::Begin((root_name + "###IDE" + std::to_string(id)).c_str());
+
+        if(ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows))
+        {
+            if(ImGui::IsKeyDown(GLFW_KEY_LEFT_CONTROL) && ImGui::IsKeyPressed(GLFW_KEY_S, false))
+            {
+                instance.save();
+            }
+        }
 
         ImGui::BeginGroup();
 
@@ -263,6 +280,9 @@ namespace dcpu::ide
         }
 
         edit->Render((std::string("IDEW") + std::to_string(id)).c_str());
+
+        if(edit->IsTextChanged())
+            unsaved = true;
 
         ImGui::EndChild();
 

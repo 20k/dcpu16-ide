@@ -31,11 +31,14 @@ namespace dcpu
             void load(const std::string& file);
         };
 
+        struct project_instance;
+
         struct editor
         {
             static inline int gid = 0;
             int id = gid++;
 
+            bool unsaved = false;
             TextEditor* edit = nullptr;
             dcpu::sim::CPU c;
             stack_vector<uint16_t, MEM_SIZE> translation_map;
@@ -46,7 +49,7 @@ namespace dcpu
 
             editor();
 
-            void render();
+            void render(project_instance& instance);
 
             std::string get_text() const;
             void set_text(const std::string& str);
