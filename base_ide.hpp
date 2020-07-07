@@ -35,9 +35,6 @@ namespace dcpu
 
         struct editor
         {
-            static inline int gid = 0;
-            int id = gid++;
-
             bool unsaved = false;
             TextEditor* edit = nullptr;
             dcpu::sim::CPU c;
@@ -49,7 +46,7 @@ namespace dcpu
 
             editor();
 
-            void render(project_instance& instance);
+            void render(project_instance& instance, int id);
 
             std::string get_text() const;
             void set_text(const std::string& str);

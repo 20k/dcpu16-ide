@@ -190,12 +190,14 @@ namespace dcpu::ide
         edit->SetLanguageDefinition(lang);
     }
 
-    void editor::render(project_instance& instance)
+    void editor::render(project_instance& instance, int id)
     {
         std::string root_name = "IDE";
 
         if(unsaved)
             root_name += " (unsaved)";
+
+        ImGui::SetNextWindowSize(ImVec2(500, 500), ImGuiCond_Appearing);
 
         ImGui::Begin((root_name + "###IDE" + std::to_string(id)).c_str());
 
