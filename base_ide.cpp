@@ -203,6 +203,7 @@ namespace dcpu::ide
                 halted = false;
 
                 translation_map = rinfo_opt.value().translation_map;
+                pc_to_source_line = rinfo_opt.value().pc_to_source_line;
             }
             else
             {
@@ -242,7 +243,7 @@ namespace dcpu::ide
 
             if(c.regs[PC_REG] < translation_map.size())
             {
-                int line = 0;
+                /*int line = 0;
                 int seek_character = translation_map[c.regs[PC_REG]];
 
                 std::string seek = get_text();
@@ -251,7 +252,9 @@ namespace dcpu::ide
                 {
                     if(seek[i] == '\n')
                         line++;
-                }
+                }*/
+
+                int line = pc_to_source_line[c.regs[PC_REG]];
 
                 current_pc.insert(line+1);
             }

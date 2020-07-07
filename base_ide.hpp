@@ -39,6 +39,7 @@ namespace dcpu
             TextEditor* edit = nullptr;
             dcpu::sim::CPU c;
             stack_vector<uint16_t, MEM_SIZE> translation_map;
+            stack_vector<uint16_t, MEM_SIZE> pc_to_source_line;
             bool halted = false;
 
             std::string additional_info;
