@@ -327,7 +327,13 @@ namespace dcpu::ide
                     }
                     else if(ImGui::IsItemHovered())
                     {
-                        ImGui::SetTooltip("%s", desc.c_str());
+                        ImGui::BeginTooltip();
+
+                        ImGui::PushTextWrapPos(400);
+
+                        ImGui::Text("%s", desc.c_str());
+
+                        ImGui::EndTooltip();
                     }
                 }
 
