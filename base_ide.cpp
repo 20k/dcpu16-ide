@@ -171,6 +171,9 @@ namespace dcpu::ide
     {
         edit = new TextEditor;
         auto lang = TextEditor::LanguageDefinition::CPlusPlus();
+        lang.mCaseSensitive = false;
+        lang.mSingleLineComment = ";";
+
         auto mapping = instruction_to_description();
 
         for(auto& i : mapping)
