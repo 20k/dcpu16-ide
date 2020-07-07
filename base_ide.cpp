@@ -260,17 +260,6 @@ namespace dcpu::ide
 
             if(c.regs[PC_REG] < translation_map.size())
             {
-                /*int line = 0;
-                int seek_character = translation_map[c.regs[PC_REG]];
-
-                std::string seek = get_text();
-
-                for(int i=0; i <= seek_character && i < (int)seek.size(); i++)
-                {
-                    if(seek[i] == '\n')
-                        line++;
-                }*/
-
                 int line = pc_to_source_line[c.regs[PC_REG]];
 
                 current_pc.insert(line+1);
