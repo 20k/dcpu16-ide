@@ -48,6 +48,7 @@ namespace dcpu
 
             std::string additional_info;
 
+            bool dirty_errors = false;
             std::string error_string;
             int error_line = 0;
 

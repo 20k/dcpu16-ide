@@ -259,7 +259,8 @@ namespace dcpu::ide
             std::map<int, std::string> error_marker;
             error_marker[error_line + 1] = error_string;
 
-            edit->SetErrorMarkers(error_marker);
+            if(dirty_errors)
+                edit->SetErrorMarkers(error_marker);
 
             if(ImGui::Button("Clear Errors"))
             {
@@ -272,6 +273,8 @@ namespace dcpu::ide
             std::map<int, std::string> error_marker;
             edit->SetErrorMarkers(error_marker);
         }
+
+        dirty_errors = false;
 
         ImGui::EndGroup();
 
@@ -305,6 +308,8 @@ namespace dcpu::ide
     bool editor::assemble()
     {
         auto [rinfo_opt, err] = assemble_fwd(get_text());
+
+        dirty_errors = true;
 
         if(rinfo_opt.has_value())
         {
