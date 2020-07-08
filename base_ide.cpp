@@ -13,7 +13,7 @@ std::string dcpu::ide::format_error(const error_info& err)
     std::string ret = "Line: ";
 
     ///there's no string + string_view in c++, but you can .append
-    ret.append(std::to_string(err.line));
+    ret.append(std::to_string(err.line+1));
     ret.append("\nMsg: ");
     ret.append(err.msg);
     ret.append("\nName: ");
