@@ -7,11 +7,15 @@
 
 struct TextEditor;
 
+struct error_info;
+
 ///TODO: https://github.com/ocornut/imgui_club/tree/master/imgui_memory_editor
 namespace dcpu
 {
     namespace ide
     {
+        std::string format_error(const error_info& inf);
+
         struct project
         {
             std::string project_file;

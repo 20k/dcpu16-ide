@@ -8,6 +8,20 @@
 #include <iostream>
 #include <GLFW/glfw3.h>
 
+std::string dcpu::ide::format_error(const error_info& err)
+{
+    std::string ret = "Line: ";
+
+    ///there's no string + string_view in c++, but you can .append
+    ret.append(std::to_string(err.line));
+    ret.append("\nMsg: ");
+    ret.append(err.msg);
+    ret.append("\nName: ");
+    ret.append(err.name_in_source);
+
+    return ret;
+}
+
 void dcpu::ide::project::load(const std::string& str)
 {
     project_file = str;
@@ -226,7 +240,9 @@ namespace dcpu::ide
             }
             else
             {
-                printf("Err %s\n", err.data());
+                std::string formatted = format_error(err);
+
+                printf("Err %s\n", formatted.c_str());
             }
         }
 
