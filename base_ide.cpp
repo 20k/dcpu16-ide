@@ -227,23 +227,7 @@ namespace dcpu::ide
 
         if(ImGui::Button("Assemble"))
         {
-            auto [rinfo_opt, err] = assemble_fwd(get_text());
-
-            if(rinfo_opt.has_value())
-            {
-                c = dcpu::sim::CPU();
-                c.load(rinfo_opt.value().mem, 0);
-                halted = false;
-
-                translation_map = rinfo_opt.value().translation_map;
-                pc_to_source_line = rinfo_opt.value().pc_to_source_line;
-            }
-            else
-            {
-                std::string formatted = format_error(err);
-
-                printf("Err %s\n", formatted.c_str());
-            }
+            assemble();
         }
 
         if(ImGui::Button("Step"))
@@ -266,6 +250,28 @@ namespace dcpu::ide
         register_editor("IA:", c.regs[IA_REG]);
 
         ImGui::Text(("Cycles: " + std::to_string(c.cycle_count)).c_str());
+
+        if(error_string.size() > 0)
+        {
+            ImGui::Text("Error:");
+            ImGui::TextWrapped("%s", error_string.c_str());
+
+            std::map<int, std::string> error_marker;
+            error_marker[error_line + 1] = error_string;
+
+            edit->SetErrorMarkers(error_marker);
+
+            if(ImGui::Button("Clear Errors"))
+            {
+                error_marker.clear();
+                edit->SetErrorMarkers(error_marker);
+            }
+        }
+        else
+        {
+            std::map<int, std::string> error_marker;
+            edit->SetErrorMarkers(error_marker);
+        }
 
         ImGui::EndGroup();
 
@@ -294,6 +300,35 @@ namespace dcpu::ide
         ImGui::EndChild();
 
         ImGui::End();
+    }
+
+    bool editor::assemble()
+    {
+        auto [rinfo_opt, err] = assemble_fwd(get_text());
+
+        if(rinfo_opt.has_value())
+        {
+            c = dcpu::sim::CPU();
+            c.load(rinfo_opt.value().mem, 0);
+            halted = false;
+
+            translation_map = rinfo_opt.value().translation_map;
+            pc_to_source_line = rinfo_opt.value().pc_to_source_line;
+
+            error_string.clear();
+            error_line = 0;
+
+            return false;
+        }
+        else
+        {
+            std::string formatted = format_error(err);
+
+            error_string = formatted;
+            error_line = err.line;
+
+            return true;
+        }
     }
 
     std::string editor::get_text() const

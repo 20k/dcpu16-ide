@@ -48,9 +48,13 @@ namespace dcpu
 
             std::string additional_info;
 
+            std::string error_string;
+            int error_line = 0;
+
             editor();
 
             void render(project_instance& instance, int id);
+            bool assemble();
 
             std::string get_text() const;
             void set_text(const std::string& str);
