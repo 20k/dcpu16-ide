@@ -46,6 +46,8 @@ namespace dcpu
             stack_vector<uint16_t, MEM_SIZE> pc_to_source_line;
             bool halted = false;
 
+            bool is_hex = false;
+
             std::string additional_info;
 
             bool dirty_errors = false;

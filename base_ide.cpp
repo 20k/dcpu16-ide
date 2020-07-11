@@ -156,7 +156,7 @@ nlohmann::json instruction_to_description()
     return data;
 }
 
-void register_editor(const std::string& name, uint16_t& val)
+void register_editor(const std::string& name, uint16_t& val, bool is_hex)
 {
     int ival = val;
 
@@ -170,7 +170,12 @@ void register_editor(const std::string& name, uint16_t& val)
 
     ImGui::PushItemWidth(100);
 
-    ImGui::InputInt(("##" + name).c_str(), &ival);
+    int step = 1;
+
+    if(!is_hex)
+        ImGui::InputInt(("##" + name).c_str(), &ival);
+    else
+        ImGui::InputScalar(("##" + name).c_str(), ImGuiDataType_S32, (void*)&ival, (void*)&step, nullptr, "%04X", 0);
 
     val = ival;
 }
@@ -236,20 +241,22 @@ namespace dcpu::ide
                 halted = halted || c.step();
         }
 
-        register_editor("A: ", c.regs[A_REG]);
-        register_editor("B: ", c.regs[B_REG]);
-        register_editor("C: ", c.regs[C_REG]);
-        register_editor("X: ", c.regs[X_REG]);
-        register_editor("Y: ", c.regs[Y_REG]);
-        register_editor("Z: ", c.regs[Z_REG]);
-        register_editor("I: ", c.regs[I_REG]);
-        register_editor("J: ", c.regs[J_REG]);
-        register_editor("PC:", c.regs[PC_REG]);
-        register_editor("SP:", c.regs[SP_REG]);
-        register_editor("EX:", c.regs[EX_REG]);
-        register_editor("IA:", c.regs[IA_REG]);
+        register_editor("A: ", c.regs[A_REG], is_hex);
+        register_editor("B: ", c.regs[B_REG], is_hex);
+        register_editor("C: ", c.regs[C_REG], is_hex);
+        register_editor("X: ", c.regs[X_REG], is_hex);
+        register_editor("Y: ", c.regs[Y_REG], is_hex);
+        register_editor("Z: ", c.regs[Z_REG], is_hex);
+        register_editor("I: ", c.regs[I_REG], is_hex);
+        register_editor("J: ", c.regs[J_REG], is_hex);
+        register_editor("PC:", c.regs[PC_REG], is_hex);
+        register_editor("SP:", c.regs[SP_REG], is_hex);
+        register_editor("EX:", c.regs[EX_REG], is_hex);
+        register_editor("IA:", c.regs[IA_REG], is_hex);
 
         ImGui::Text(("Cycles: " + std::to_string(c.cycle_count)).c_str());
+
+        ImGui::Checkbox("Hex", &is_hex);
 
         if(error_string.size() > 0)
         {
