@@ -7,6 +7,7 @@
 #include <toolkit/fs_helpers.hpp>
 #include <iostream>
 #include <GLFW/glfw3.h>
+#include <filesystem>
 
 std::string dcpu::ide::format_error(const error_info& err)
 {
@@ -28,6 +29,10 @@ void dcpu::ide::project::load(const std::string& str)
 
     project_data = file::read(project_file, file::mode::TEXT);
 
+    std::filesystem::path path = project_file;
+
+    std::filesystem::path local_directory = path.remove_filename();
+
     std::istringstream is(project_data, std::ios_base::binary | std::ios_base::in);
 
     toml::value val = toml::parse(is, project_file);
@@ -38,7 +43,7 @@ void dcpu::ide::project::load(const std::string& str)
 
     for(auto& i : assembly_files)
     {
-        assembly_data.push_back(file::read(i, file::mode::TEXT));
+        assembly_data.push_back(file::read((local_directory / i).string(), file::mode::TEXT));
     }
 }
 
@@ -69,9 +74,12 @@ void dcpu::ide::project::save()
 
     assert(assembly_files.size() == assembly_data.size());
 
+    std::filesystem::path path = project_file;
+    std::filesystem::path local_directory = path.remove_filename();
+
     for(int i=0; i < (int)assembly_files.size(); i++)
     {
-        file::write_atomic(assembly_files[i], assembly_data[i], file::mode::TEXT);
+        file::write_atomic((local_directory / assembly_files[i]).string(), assembly_data[i], file::mode::TEXT);
     }
 }
 
