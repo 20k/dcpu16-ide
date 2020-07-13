@@ -269,6 +269,8 @@ namespace dcpu::ide
 
         ImGui::Begin((root_name + "###IDE" + std::to_string(id)).c_str(), nullptr, ImGuiWindowFlags_MenuBar);
 
+        std::string cycle_string = "Cycles: " + std::to_string(c.cycle_count);
+
         if(ImGui::BeginMenuBar())
         {
             if(ImGui::MenuItem("Assemble"))
@@ -304,6 +306,8 @@ namespace dcpu::ide
 
                 ImGui::EndMenu();
             }
+
+            ImGui::MenuItem((cycle_string + "###cyclid" + std::to_string(id)).c_str());
 
             ImGui::EndMenuBar();
         }
@@ -342,7 +346,7 @@ namespace dcpu::ide
         register_editor("EX", c.regs[EX_REG], is_hex, is_modifiable);
         register_editor("IA", c.regs[IA_REG], is_hex, is_modifiable);
 
-        ImGui::Text(("Cycles: " + std::to_string(c.cycle_count)).c_str());
+        //ImGui::Text(("Cycles: " + std::to_string(c.cycle_count)).c_str());
 
         if(error_string.size() > 0)
         {
