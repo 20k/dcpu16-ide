@@ -47,6 +47,7 @@ namespace dcpu
             bool halted = false;
 
             bool is_hex = false;
+            bool is_modifiable = false; ///registers are editable
 
             std::string additional_info;
 
