@@ -45,6 +45,9 @@ namespace dcpu
             stack_vector<uint16_t, MEM_SIZE> translation_map;
             stack_vector<uint16_t, MEM_SIZE> pc_to_source_line;
             bool halted = false;
+            bool wants_step = false;
+            bool wants_run = false;
+            bool wants_assemble = false;
 
             bool is_hex = false;
             bool is_modifiable = false; ///registers are editable
@@ -58,6 +61,7 @@ namespace dcpu
             editor();
 
             void render(project_instance& instance, int id);
+            void handle_default_step();
             bool assemble();
 
             std::string get_text() const;

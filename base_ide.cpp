@@ -275,13 +275,22 @@ namespace dcpu::ide
         {
             if(ImGui::MenuItem("Assemble"))
             {
-                assemble();
+                //assemble();
+
+                wants_assemble = true;
             }
 
             if(ImGui::MenuItem("Step"))
             {
-                if(!halted)
-                    halted = halted || c.step();
+                wants_step = true;
+
+                //if(!halted)
+                //    halted = halted || c.step();
+            }
+
+            if(ImGui::MenuItem("Run"))
+            {
+                wants_run = true;
             }
 
             if(ImGui::BeginMenu("Settings"))
@@ -400,6 +409,40 @@ namespace dcpu::ide
         ImGui::EndChild();
 
         ImGui::End();
+    }
+
+    void editor::handle_default_step()
+    {
+        /*if(!wants_step)
+            return;
+
+        if(!halted)
+            halted = halted || c.step();
+
+        wants_step = false;*/
+
+        if(wants_step)
+        {
+            wants_step = false;
+            wants_run = false;
+
+            if(!halted)
+                halted = halted || c.step();
+        }
+
+        if(wants_assemble)
+        {
+            wants_assemble = false;
+            wants_run = false;
+            assemble();
+        }
+
+        ///BAD
+        if(wants_run)
+        {
+            if(!halted)
+                halted = halted || c.step();
+        }
     }
 
     bool editor::assemble()
