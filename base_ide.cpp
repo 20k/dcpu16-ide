@@ -288,9 +288,19 @@ namespace dcpu::ide
                 //    halted = halted || c.step();
             }
 
-            if(ImGui::MenuItem("Run"))
+            if(!is_running)
             {
-                wants_run = true;
+                if(ImGui::MenuItem("Run"))
+                {
+                    wants_run = true;
+                }
+            }
+            else
+            {
+                if(ImGui::MenuItem("Pause"))
+                {
+                    wants_pause = true;
+                }
             }
 
             if(ImGui::BeginMenu("Settings"))
@@ -425,6 +435,7 @@ namespace dcpu::ide
         {
             wants_step = false;
             wants_run = false;
+            is_running = false;
 
             if(!halted)
                 halted = halted || c.step();
@@ -437,9 +448,21 @@ namespace dcpu::ide
             assemble();
         }
 
-        ///BAD
         if(wants_run)
         {
+            wants_run = false;
+            is_running = true;
+        }
+
+        if(wants_pause)
+        {
+            wants_pause = false;
+            is_running = false;
+        }
+
+        if(is_running)
+        {
+            ///bad
             if(!halted)
                 halted = halted || c.step();
         }

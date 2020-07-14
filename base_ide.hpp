@@ -45,9 +45,13 @@ namespace dcpu
             stack_vector<uint16_t, MEM_SIZE> translation_map;
             stack_vector<uint16_t, MEM_SIZE> pc_to_source_line;
             bool halted = false;
+
             bool wants_step = false;
             bool wants_run = false;
+            bool wants_pause = false;
             bool wants_assemble = false;
+
+            bool is_running = false;
 
             bool is_hex = false;
             bool is_modifiable = false; ///registers are editable
