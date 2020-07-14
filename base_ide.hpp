@@ -56,6 +56,9 @@ namespace dcpu
             bool is_hex = false;
             bool is_modifiable = false; ///registers are editable
 
+            ///unsupported within the ide atm, being used for game. This is a TODO
+            int clock_hz = 1000;
+
             std::string additional_info;
 
             bool dirty_errors = false;

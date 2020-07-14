@@ -271,6 +271,8 @@ namespace dcpu::ide
 
         std::string cycle_string = "Cycles: " + std::to_string(c.cycle_count);
 
+        bool popup = false;
+
         if(ImGui::BeginMenuBar())
         {
             if(ImGui::MenuItem("Assemble"))
@@ -323,12 +325,34 @@ namespace dcpu::ide
                     is_modifiable = !is_modifiable;
                 }
 
+                if(ImGui::MenuItem("Frequency-Editor"))
+                {
+                    popup = true;
+                }
+
                 ImGui::EndMenu();
             }
 
             ImGui::MenuItem((cycle_string + "###cyclid" + std::to_string(id)).c_str());
 
             ImGui::EndMenuBar();
+        }
+
+        if(popup)
+        {
+            ImGui::OpenPopup("Frequency-Editor");
+        }
+
+        if(ImGui::BeginPopup("Frequency-Editor"))
+        {
+            ImGui::SliderInt("Ticks Per Second", &clock_hz, 1, 1000);
+
+            if(ImGui::IsItemHovered())
+            {
+                ImGui::SetTooltip("Ctrl+Left click to edit");
+            }
+
+            ImGui::EndPopup();
         }
 
         if(ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows))
@@ -369,8 +393,8 @@ namespace dcpu::ide
 
         if(error_string.size() > 0)
         {
-            ImGui::Text("Error:");
-            ImGui::TextWrapped("%s", error_string.c_str());
+            //ImGui::Text("Error:");
+            //ImGui::TextWrapped("%s", error_string.c_str());
 
             std::map<int, std::string> error_marker;
             error_marker[error_line + 1] = error_string;
@@ -396,7 +420,21 @@ namespace dcpu::ide
 
         ImGui::SameLine();
 
-        ImGui::BeginChild(("Child" + std::to_string(id)).c_str());
+        int ysize = ImGui::GetContentRegionAvail().y;
+
+        std::string full_error_str = "Error:\n" + error_string;
+
+        int error_height = ImGui::CalcTextSize(full_error_str.c_str()).y;
+
+        int offset = 10;
+
+        if(error_string.size() == 0)
+        {
+            offset = 0;
+            error_height = 0;
+        }
+
+        ImGui::BeginChild(("Child" + std::to_string(id)).c_str(), ImVec2(0, ysize - error_height - offset));
 
         {
             std::unordered_set<int> current_pc;
@@ -417,6 +455,18 @@ namespace dcpu::ide
             unsaved = true;
 
         ImGui::EndChild();
+
+        if(error_height > 0)
+        {
+            ImGui::BeginChild("IDECHILD", ImVec2(0, error_height));
+
+            if(error_string.size() > 0)
+            {
+                ImGui::Text("%s\n", full_error_str.c_str());
+            }
+
+            ImGui::EndChild();
+        }
 
         ImGui::End();
     }
