@@ -50,6 +50,7 @@ namespace dcpu
             bool wants_run = false;
             bool wants_pause = false;
             bool wants_assemble = false;
+            bool wants_reset = false;
 
             bool is_running = false;
 
@@ -58,6 +59,7 @@ namespace dcpu
 
             ///unsupported within the ide atm, being used for game. This is a TODO
             int clock_hz = 1000;
+            bool dirty_frequency = false;
 
             std::string additional_info;
 

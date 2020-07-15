@@ -305,6 +305,11 @@ namespace dcpu::ide
                 }
             }
 
+            if(ImGui::MenuItem("Reset"))
+            {
+                wants_reset = true;
+            }
+
             if(ImGui::BeginMenu("Settings"))
             {
                 std::string is_hex_str = is_hex ? "[x] Hex###hexid" : "[ ] Hex###hexid";
@@ -345,7 +350,17 @@ namespace dcpu::ide
 
         if(ImGui::BeginPopup("Frequency-Editor"))
         {
+            int old = clock_hz;
+
             ImGui::SliderInt("Ticks Per Second", &clock_hz, 1, 1000);
+
+            if(clock_hz < 1)
+                clock_hz = 1;
+
+            if(clock_hz > 1000)
+                clock_hz = 1000;
+
+            dirty_frequency = old != clock_hz;
 
             if(ImGui::IsItemHovered())
             {
@@ -491,11 +506,14 @@ namespace dcpu::ide
                 halted = halted || c.step();
         }
 
-        if(wants_assemble)
+        if(wants_assemble || wants_reset)
         {
+            wants_reset = false;
             wants_assemble = false;
             wants_run = false;
             assemble();
+
+            is_running = false;
         }
 
         if(wants_run)
