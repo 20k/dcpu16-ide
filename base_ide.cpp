@@ -206,10 +206,6 @@ void register_editor(const std::string& name, uint16_t& val, bool is_hex, bool i
 
     ImGui::SameLine();
 
-    //ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth());
-
-    //ImGui::PushItemWidth(ImGui::CalcTextSize("65535").x*4 + 40);
-
     ImGui::PushItemWidth(100);
 
     int step = 1;
@@ -277,17 +273,12 @@ namespace dcpu::ide
         {
             if(ImGui::MenuItem("Assemble"))
             {
-                //assemble();
-
                 wants_assemble = true;
             }
 
             if(ImGui::MenuItem("Step"))
             {
                 wants_step = true;
-
-                //if(!halted)
-                //    halted = halted || c.step();
             }
 
             if(!is_running)
@@ -380,17 +371,6 @@ namespace dcpu::ide
 
         ImGui::BeginGroup();
 
-        /*if(ImGui::Button("Assemble"))
-        {
-            assemble();
-        }
-
-        if(ImGui::Button("Step"))
-        {
-            if(!halted)
-                halted = halted || c.step();
-        }*/
-
         register_editor("A ", c.regs[A_REG], is_hex, is_modifiable);
         register_editor("B ", c.regs[B_REG], is_hex, is_modifiable);
         register_editor("C ", c.regs[C_REG], is_hex, is_modifiable);
@@ -404,13 +384,8 @@ namespace dcpu::ide
         register_editor("EX", c.regs[EX_REG], is_hex, is_modifiable);
         register_editor("IA", c.regs[IA_REG], is_hex, is_modifiable);
 
-        //ImGui::Text(("Cycles: " + std::to_string(c.cycle_count)).c_str());
-
         if(error_string.size() > 0)
         {
-            //ImGui::Text("Error:");
-            //ImGui::TextWrapped("%s", error_string.c_str());
-
             std::map<int, std::string> error_marker;
             error_marker[error_line + 1] = error_string;
 
@@ -489,14 +464,6 @@ namespace dcpu::ide
 
     void editor::handle_default_step()
     {
-        /*if(!wants_step)
-            return;
-
-        if(!halted)
-            halted = halted || c.step();
-
-        wants_step = false;*/
-
         if(wants_step)
         {
             wants_step = false;
