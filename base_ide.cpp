@@ -417,12 +417,12 @@ namespace dcpu::ide
             if(dirty_errors)
                 edit->SetErrorMarkers(error_marker);
 
-            if(ImGui::Button("Clear Errors"))
+            /*if(ImGui::Button("Clear Errors"))
             {
                 error_marker.clear();
                 edit->SetErrorMarkers(error_marker);
                 error_string.clear();
-            }
+            }*/
         }
         else
         {
