@@ -421,6 +421,7 @@ namespace dcpu::ide
             {
                 error_marker.clear();
                 edit->SetErrorMarkers(error_marker);
+                error_string.clear();
             }
         }
         else
