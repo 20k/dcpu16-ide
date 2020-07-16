@@ -164,11 +164,14 @@ nlohmann::json instruction_to_description()
     return data;
 }
 
-std::string format_hex(uint16_t val)
+std::string format_hex(uint16_t val, bool is_sign)
 {
     std::stringstream str;
 
-    str << std::hex << val;
+    if(!is_sign)
+        str << std::hex << val;
+    else
+        str << std::hex << (int16_t)val;
 
     std::string rval = str.str();
 
@@ -181,9 +184,14 @@ std::string format_hex(uint16_t val)
 }
 
 ///formatted to same width as format_hex
-std::string format_dec(uint16_t val)
+std::string format_dec(uint16_t val, bool is_sign)
 {
-    std::string out = std::to_string(val);
+    std::string out;
+
+    if(!is_sign)
+        out = std::to_string(val);
+    else
+        out = std::to_string((int16_t)val);
 
     for(int i=(int)out.size(); i < 6; i++)
     {
@@ -193,15 +201,13 @@ std::string format_dec(uint16_t val)
     return out;
 }
 
-std::string format_hex_or_dec(int val, bool hex)
+std::string format_hex_or_dec(uint16_t val, bool hex, bool is_sign)
 {
-    return hex ? format_hex(val) : format_dec(val);
+    return hex ? format_hex(val, is_sign) : format_dec(val, is_sign);
 }
 
-void register_editor(const std::string& name, uint16_t& val, bool is_hex, bool is_modifiable)
+void register_editor(const std::string& name, uint16_t& val, bool is_hex, bool is_sign, bool is_modifiable)
 {
-    int ival = val;
-
     ImGui::Text(name.c_str());
 
     ImGui::SameLine();
@@ -212,17 +218,19 @@ void register_editor(const std::string& name, uint16_t& val, bool is_hex, bool i
 
     if(is_modifiable)
     {
+        int32_t ival = (is_sign && !is_hex) ? (int32_t)(int16_t)val : (int32_t)val;
+
         if(!is_hex)
             ImGui::InputInt(("##" + name).c_str(), &ival);
         else
             ImGui::InputScalar(("##" + name).c_str(), ImGuiDataType_S32, (void*)&ival, (void*)&step, nullptr, "%04X", 0);
+
+        val = ival;
     }
     else
     {
-        ImGui::Text(("| " + format_hex_or_dec(val, is_hex)).c_str());
+        ImGui::Text(("| " + format_hex_or_dec(val, is_hex, is_sign)).c_str());
     }
-
-    val = ival;
 }
 
 namespace dcpu::ide
@@ -312,6 +320,15 @@ namespace dcpu::ide
                     is_hex = !is_hex;
                 }
 
+                std::string is_signed_str = is_sign ? "[x] Signed###signedid" : "[ ] Signed###signedid";
+
+                is_signed_str += std::to_string(id);
+
+                if(ImGui::MenuItem(is_signed_str.c_str()))
+                {
+                    is_sign = !is_sign;
+                }
+
                 std::string is_modifiable_str = is_modifiable ? "[x] Reg-Editor###regid" : "[ ] Reg-Editor###regid";
 
                 is_modifiable_str += std::to_string(id);
@@ -371,18 +388,18 @@ namespace dcpu::ide
 
         ImGui::BeginGroup();
 
-        register_editor("A ", c.regs[A_REG], is_hex, is_modifiable);
-        register_editor("B ", c.regs[B_REG], is_hex, is_modifiable);
-        register_editor("C ", c.regs[C_REG], is_hex, is_modifiable);
-        register_editor("X ", c.regs[X_REG], is_hex, is_modifiable);
-        register_editor("Y ", c.regs[Y_REG], is_hex, is_modifiable);
-        register_editor("Z ", c.regs[Z_REG], is_hex, is_modifiable);
-        register_editor("I ", c.regs[I_REG], is_hex, is_modifiable);
-        register_editor("J ", c.regs[J_REG], is_hex, is_modifiable);
-        register_editor("PC", c.regs[PC_REG], is_hex, is_modifiable);
-        register_editor("SP", c.regs[SP_REG], is_hex, is_modifiable);
-        register_editor("EX", c.regs[EX_REG], is_hex, is_modifiable);
-        register_editor("IA", c.regs[IA_REG], is_hex, is_modifiable);
+        register_editor("A ", c.regs[A_REG], is_hex, is_sign, is_modifiable);
+        register_editor("B ", c.regs[B_REG], is_hex, is_sign, is_modifiable);
+        register_editor("C ", c.regs[C_REG], is_hex, is_sign, is_modifiable);
+        register_editor("X ", c.regs[X_REG], is_hex, is_sign, is_modifiable);
+        register_editor("Y ", c.regs[Y_REG], is_hex, is_sign, is_modifiable);
+        register_editor("Z ", c.regs[Z_REG], is_hex, is_sign, is_modifiable);
+        register_editor("I ", c.regs[I_REG], is_hex, is_sign, is_modifiable);
+        register_editor("J ", c.regs[J_REG], is_hex, is_sign, is_modifiable);
+        register_editor("PC", c.regs[PC_REG], is_hex, is_sign, is_modifiable);
+        register_editor("SP", c.regs[SP_REG], is_hex, is_sign, is_modifiable);
+        register_editor("EX", c.regs[EX_REG], is_hex, is_sign, is_modifiable);
+        register_editor("IA", c.regs[IA_REG], is_hex, is_sign, is_modifiable);
 
         if(error_string.size() > 0)
         {
