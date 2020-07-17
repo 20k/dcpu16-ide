@@ -91,6 +91,7 @@ namespace dcpu
         struct reference_card
         {
             void render();
+            void render_inline();
         };
     }
 }

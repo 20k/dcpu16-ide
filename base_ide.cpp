@@ -571,6 +571,13 @@ namespace dcpu::ide
     {
         ImGui::Begin("Reference", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 
+        render_inline();
+
+        ImGui::End();
+    }
+
+    void reference_card::render_inline()
+    {
         auto all_instr = instruction_to_description();
 
         std::map<std::string, std::vector<nlohmann::json>> by_category;
@@ -612,7 +619,5 @@ namespace dcpu::ide
                 ImGui::TreePop();
             }
         }
-
-        ImGui::End();
     }
 }
