@@ -262,16 +262,8 @@ namespace dcpu::ide
         edit->SetLanguageDefinition(lang);
     }
 
-    void editor::render(project_instance& instance, int id)
+    void editor::render_inline(project_instance& instance, int id)
     {
-        std::string root_name = "IDE";
-
-        if(unsaved)
-            root_name += " (unsaved)";
-
-        ImGui::SetNextWindowSize(ImVec2(500, 500), ImGuiCond_Appearing);
-
-        ImGui::Begin((root_name + "###IDE" + std::to_string(id)).c_str(), nullptr, ImGuiWindowFlags_MenuBar);
 
         std::string cycle_string = "Cycles: " + std::to_string(c.cycle_count);
 
@@ -475,6 +467,20 @@ namespace dcpu::ide
 
             ImGui::EndChild();
         }
+    }
+
+    void editor::render(project_instance& instance, int id)
+    {
+        std::string root_name = "IDE";
+
+        if(unsaved)
+            root_name += " (unsaved)";
+
+        ImGui::SetNextWindowSize(ImVec2(500, 500), ImGuiCond_Appearing);
+
+        ImGui::Begin((root_name + "###IDE" + std::to_string(id)).c_str(), nullptr, ImGuiWindowFlags_MenuBar);
+
+        render_inline(instance, id);
 
         ImGui::End();
     }

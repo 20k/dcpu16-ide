@@ -71,6 +71,7 @@ namespace dcpu
             editor();
 
             void render(project_instance& instance, int id);
+            void render_inline(project_instance& instance, int id);
             void handle_default_step();
             bool assemble();
 
