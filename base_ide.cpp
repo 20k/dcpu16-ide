@@ -250,6 +250,10 @@ namespace dcpu::ide
         lang.mSingleLineComment = ";";
         lang.mAutoIndentation = false;
 
+        lang.mKeywords.clear();
+        lang.mIdentifiers.clear();
+        lang.mPreprocIdentifiers.clear();
+
         auto mapping = instruction_to_description();
 
         for(auto& i : mapping)
@@ -264,7 +268,6 @@ namespace dcpu::ide
 
     void editor::render_inline(project_instance& instance, int id)
     {
-
         std::string cycle_string = "Cycles: " + std::to_string(c.cycle_count);
 
         bool popup = false;
