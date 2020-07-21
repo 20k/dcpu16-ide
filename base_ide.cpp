@@ -164,7 +164,7 @@ nlohmann::json instruction_to_description()
     return data;
 }
 
-std::string format_hex(uint16_t val, bool is_sign)
+static std::string format_hex(uint16_t val, bool is_sign)
 {
     std::stringstream str;
 
@@ -184,7 +184,7 @@ std::string format_hex(uint16_t val, bool is_sign)
 }
 
 ///formatted to same width as format_hex
-std::string format_dec(uint16_t val, bool is_sign)
+static std::string format_dec(uint16_t val, bool is_sign)
 {
     std::string out;
 
@@ -201,7 +201,7 @@ std::string format_dec(uint16_t val, bool is_sign)
     return out;
 }
 
-std::string format_hex_or_dec(uint16_t val, bool hex, bool is_sign)
+static std::string format_hex_or_dec(uint16_t val, bool hex, bool is_sign)
 {
     return hex ? format_hex(val, is_sign) : format_dec(val, is_sign);
 }
