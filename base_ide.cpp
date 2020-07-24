@@ -2,7 +2,7 @@
 
 #include <imguicolortextedit/TextEditor.h>
 #include <nlohmann/json.hpp>
-#include <dcpu16-asm/base_asm.hpp>
+#include <dcpu16-asm/base_asm_fwd.hpp>
 #include <toml.hpp>
 #include <toolkit/fs_helpers.hpp>
 #include <iostream>
