@@ -4,6 +4,7 @@
 #include <imgui/imgui.h>
 #include <dcpu16-sim/base_sim.hpp>
 #include <string>
+#include <chrono>
 
 struct TextEditor;
 
@@ -81,6 +82,8 @@ namespace dcpu
 
         struct project_instance
         {
+            std::chrono::time_point<std::chrono::steady_clock> autosave_timer = std::chrono::steady_clock::now();
+            bool is_autosaving = true;
             project proj;
 
             std::vector<editor> editors;

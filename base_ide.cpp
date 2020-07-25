@@ -333,6 +333,15 @@ namespace dcpu::ide
                     is_modifiable = !is_modifiable;
                 }
 
+                std::string is_autosave_str = instance.is_autosaving ? "[x] Autosave###autosaveid" : "[ ] Autosave###autosaveid";
+
+                is_autosave_str += std::to_string(id);
+
+                if(ImGui::MenuItem(is_autosave_str.c_str()))
+                {
+                    instance.is_autosaving = !instance.is_autosaving;
+                }
+
                 if(ImGui::MenuItem("Frequency-Editor"))
                 {
                     popup = true;
@@ -469,6 +478,19 @@ namespace dcpu::ide
             }
 
             ImGui::EndChild();
+        }
+
+        if(instance.is_autosaving && unsaved)
+        {
+            std::chrono::time_point<std::chrono::steady_clock> now = std::chrono::steady_clock::now();
+
+            double result = std::chrono::duration<double>(now - instance.autosave_timer).count();
+
+            if(result > 5)
+            {
+                instance.autosave_timer = now;
+                instance.save();
+            }
         }
     }
 
