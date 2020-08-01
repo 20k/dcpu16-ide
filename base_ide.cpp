@@ -457,7 +457,7 @@ namespace dcpu::ide
             {
                 int line = pc_to_source_line[c.regs[PC_REG]];
 
-                current_pc[line] = ImVec4(0, 0x80/255.f, 0xf0/255.f, 0x40/255.f);
+                current_pc[line + 1] = ImVec4(0, 0x80/255.f, 0xf0/255.f, 0x40/255.f);
             }
 
             edit->SetHighlightLines(current_pc);
