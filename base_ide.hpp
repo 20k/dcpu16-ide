@@ -45,6 +45,7 @@ namespace dcpu
             dcpu::sim::CPU c;
             stack_vector<uint16_t, MEM_SIZE> translation_map;
             stack_vector<uint16_t, MEM_SIZE> pc_to_source_line;
+            stack_vector<uint16_t, MEM_SIZE> source_line_to_pc;
             bool halted = false;
 
             bool wants_step = false;

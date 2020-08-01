@@ -233,430 +233,442 @@ void register_editor(const std::string& name, uint16_t& val, bool is_hex, bool i
     }
 }
 
-namespace dcpu::ide
+void dcpu::ide::settings::load(const std::string& file)
 {
-    void settings::load(const std::string& file)
-    {
-        toml::value val = toml::parse(file);
+    toml::value val = toml::parse(file);
 
-        files = toml::get<std::vector<std::string>>(val["files"]);
+    files = toml::get<std::vector<std::string>>(val["files"]);
+}
+
+dcpu::ide::editor::editor()
+{
+    edit = new TextEditor;
+    auto lang = TextEditor::LanguageDefinition::CPlusPlus();
+    lang.mCaseSensitive = false;
+    lang.mSingleLineComment = ";";
+    lang.mAutoIndentation = false;
+
+    lang.mKeywords.clear();
+    lang.mIdentifiers.clear();
+    lang.mPreprocIdentifiers.clear();
+
+    auto mapping = instruction_to_description();
+
+    for(auto& i : mapping)
+    {
+        TextEditor::Identifier id;
+        id.mDeclaration = i["description"];
+        lang.mIdentifiers.insert(std::make_pair(i["name"], id));
     }
 
-    editor::editor()
+    edit->SetLanguageDefinition(lang);
+
+    auto palette = edit->GetPalette();
+
+    palette[(int)TextEditor::PaletteIndex::Breakpoint] = IM_COL32(150, 40, 40, 128);
+
+    edit->SetPalette(palette);
+}
+
+void dcpu::ide::editor::render_inline(project_instance& instance, int id)
+{
+    std::string cycle_string = "Cycles: " + std::to_string(c.cycle_count);
+
+    bool popup = false;
+
+    if(ImGui::BeginMenuBar())
     {
-        edit = new TextEditor;
-        auto lang = TextEditor::LanguageDefinition::CPlusPlus();
-        lang.mCaseSensitive = false;
-        lang.mSingleLineComment = ";";
-        lang.mAutoIndentation = false;
-
-        lang.mKeywords.clear();
-        lang.mIdentifiers.clear();
-        lang.mPreprocIdentifiers.clear();
-
-        auto mapping = instruction_to_description();
-
-        for(auto& i : mapping)
+        if(ImGui::MenuItem("Assemble"))
         {
-            TextEditor::Identifier id;
-            id.mDeclaration = i["description"];
-            lang.mIdentifiers.insert(std::make_pair(i["name"], id));
+            wants_assemble = true;
         }
 
-        edit->SetLanguageDefinition(lang);
+        if(ImGui::MenuItem("Step"))
+        {
+            wants_step = true;
+        }
 
-        auto palette = edit->GetPalette();
+        if(!is_running)
+        {
+            if(ImGui::MenuItem("Run"))
+            {
+                wants_run = true;
+            }
+        }
+        else
+        {
+            if(ImGui::MenuItem("Pause"))
+            {
+                wants_pause = true;
+            }
+        }
 
-        palette[(int)TextEditor::PaletteIndex::Breakpoint] = IM_COL32(150, 40, 40, 128);
+        if(ImGui::MenuItem("Reset"))
+        {
+            wants_reset = true;
+        }
 
-        edit->SetPalette(palette);
+        if(ImGui::BeginMenu("Settings"))
+        {
+            std::string is_hex_str = is_hex ? "[x] Hex###hexid" : "[ ] Hex###hexid";
+
+            is_hex_str += std::to_string(id);
+
+            if(ImGui::MenuItem(is_hex_str.c_str()))
+            {
+                is_hex = !is_hex;
+            }
+
+            std::string is_signed_str = is_sign ? "[x] Signed###signedid" : "[ ] Signed###signedid";
+
+            is_signed_str += std::to_string(id);
+
+            if(ImGui::MenuItem(is_signed_str.c_str()))
+            {
+                is_sign = !is_sign;
+            }
+
+            std::string is_modifiable_str = is_modifiable ? "[x] Reg-Editor###regid" : "[ ] Reg-Editor###regid";
+
+            is_modifiable_str += std::to_string(id);
+
+            if(ImGui::MenuItem(is_modifiable_str.c_str()))
+            {
+                is_modifiable = !is_modifiable;
+            }
+
+            std::string is_autosave_str = instance.is_autosaving ? "[x] Autosave###autosaveid" : "[ ] Autosave###autosaveid";
+
+            is_autosave_str += std::to_string(id);
+
+            if(ImGui::MenuItem(is_autosave_str.c_str()))
+            {
+                instance.is_autosaving = !instance.is_autosaving;
+            }
+
+            if(ImGui::MenuItem("Frequency-Editor"))
+            {
+                popup = true;
+            }
+
+            ImGui::EndMenu();
+        }
+
+        ImGui::MenuItem((cycle_string + "###cyclid" + std::to_string(id)).c_str());
+
+        ImGui::EndMenuBar();
     }
 
-    void editor::render_inline(project_instance& instance, int id)
+    if(popup)
     {
-        std::string cycle_string = "Cycles: " + std::to_string(c.cycle_count);
+        ImGui::OpenPopup("Frequency-Editor");
+    }
 
-        bool popup = false;
+    if(ImGui::BeginPopup("Frequency-Editor"))
+    {
+        int old = clock_hz;
 
-        if(ImGui::BeginMenuBar())
+        ImGui::SliderInt("Ticks Per Second", &clock_hz, 1, 1000);
+
+        if(clock_hz < 1)
+            clock_hz = 1;
+
+        if(clock_hz > 1000)
+            clock_hz = 1000;
+
+        dirty_frequency = old != clock_hz;
+
+        if(ImGui::IsItemHovered())
         {
-            if(ImGui::MenuItem("Assemble"))
-            {
-                wants_assemble = true;
-            }
-
-            if(ImGui::MenuItem("Step"))
-            {
-                wants_step = true;
-            }
-
-            if(!is_running)
-            {
-                if(ImGui::MenuItem("Run"))
-                {
-                    wants_run = true;
-                }
-            }
-            else
-            {
-                if(ImGui::MenuItem("Pause"))
-                {
-                    wants_pause = true;
-                }
-            }
-
-            if(ImGui::MenuItem("Reset"))
-            {
-                wants_reset = true;
-            }
-
-            if(ImGui::BeginMenu("Settings"))
-            {
-                std::string is_hex_str = is_hex ? "[x] Hex###hexid" : "[ ] Hex###hexid";
-
-                is_hex_str += std::to_string(id);
-
-                if(ImGui::MenuItem(is_hex_str.c_str()))
-                {
-                    is_hex = !is_hex;
-                }
-
-                std::string is_signed_str = is_sign ? "[x] Signed###signedid" : "[ ] Signed###signedid";
-
-                is_signed_str += std::to_string(id);
-
-                if(ImGui::MenuItem(is_signed_str.c_str()))
-                {
-                    is_sign = !is_sign;
-                }
-
-                std::string is_modifiable_str = is_modifiable ? "[x] Reg-Editor###regid" : "[ ] Reg-Editor###regid";
-
-                is_modifiable_str += std::to_string(id);
-
-                if(ImGui::MenuItem(is_modifiable_str.c_str()))
-                {
-                    is_modifiable = !is_modifiable;
-                }
-
-                std::string is_autosave_str = instance.is_autosaving ? "[x] Autosave###autosaveid" : "[ ] Autosave###autosaveid";
-
-                is_autosave_str += std::to_string(id);
-
-                if(ImGui::MenuItem(is_autosave_str.c_str()))
-                {
-                    instance.is_autosaving = !instance.is_autosaving;
-                }
-
-                if(ImGui::MenuItem("Frequency-Editor"))
-                {
-                    popup = true;
-                }
-
-                ImGui::EndMenu();
-            }
-
-            ImGui::MenuItem((cycle_string + "###cyclid" + std::to_string(id)).c_str());
-
-            ImGui::EndMenuBar();
+            ImGui::SetTooltip("Ctrl+Left click to edit");
         }
 
-        if(popup)
+        ImGui::EndPopup();
+    }
+
+    if(ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows))
+    {
+        if(ImGui::IsKeyDown(GLFW_KEY_LEFT_CONTROL) && ImGui::IsKeyPressed(GLFW_KEY_S, false))
         {
-            ImGui::OpenPopup("Frequency-Editor");
+            instance.save();
+        }
+    }
+
+    ImGui::BeginGroup();
+
+    register_editor("A ", c.regs[A_REG], is_hex, is_sign, is_modifiable);
+    register_editor("B ", c.regs[B_REG], is_hex, is_sign, is_modifiable);
+    register_editor("C ", c.regs[C_REG], is_hex, is_sign, is_modifiable);
+    register_editor("X ", c.regs[X_REG], is_hex, is_sign, is_modifiable);
+    register_editor("Y ", c.regs[Y_REG], is_hex, is_sign, is_modifiable);
+    register_editor("Z ", c.regs[Z_REG], is_hex, is_sign, is_modifiable);
+    register_editor("I ", c.regs[I_REG], is_hex, is_sign, is_modifiable);
+    register_editor("J ", c.regs[J_REG], is_hex, is_sign, is_modifiable);
+    register_editor("PC", c.regs[PC_REG], is_hex, is_sign, is_modifiable);
+    register_editor("SP", c.regs[SP_REG], is_hex, is_sign, is_modifiable);
+    register_editor("EX", c.regs[EX_REG], is_hex, is_sign, is_modifiable);
+    register_editor("IA", c.regs[IA_REG], is_hex, is_sign, is_modifiable);
+
+    if(error_string.size() > 0)
+    {
+        std::map<int, std::string> error_marker;
+        error_marker[error_line + 1] = error_string;
+
+        if(dirty_errors)
+            edit->SetErrorMarkers(error_marker);
+
+        /*if(ImGui::Button("Clear Errors"))
+        {
+            error_marker.clear();
+            edit->SetErrorMarkers(error_marker);
+            error_string.clear();
+        }*/
+    }
+    else
+    {
+        std::map<int, std::string> error_marker;
+        edit->SetErrorMarkers(error_marker);
+    }
+
+    dirty_errors = false;
+
+    ImGui::EndGroup();
+
+    ImGui::SameLine();
+
+    int ysize = ImGui::GetContentRegionAvail().y;
+
+    std::string full_error_str = "Error:\n" + error_string;
+
+    int error_height = ImGui::CalcTextSize(full_error_str.c_str()).y;
+
+    int offset = 10;
+
+    if(error_string.size() == 0)
+    {
+        offset = 0;
+        error_height = 0;
+    }
+
+    ImGui::BeginChild(("Child" + std::to_string(id)).c_str(), ImVec2(0, ysize - error_height - offset));
+
+    {
+        //std::unordered_set<int> current_pc;
+
+        std::map<int, ImVec4> current_pc;
+
+        if(c.regs[PC_REG] < translation_map.size())
+        {
+            int line = pc_to_source_line[c.regs[PC_REG]];
+
+            current_pc[line + 1] = ImVec4(0, 0x80/255.f, 0xf0/255.f, 0x40/255.f);
         }
 
-        if(ImGui::BeginPopup("Frequency-Editor"))
-        {
-            int old = clock_hz;
+        edit->SetHighlightLines(current_pc);
+    }
 
-            ImGui::SliderInt("Ticks Per Second", &clock_hz, 1, 1000);
+    edit->Render((std::string("IDEW") + std::to_string(id)).c_str());
 
-            if(clock_hz < 1)
-                clock_hz = 1;
+    if(edit->IsTextChanged())
+        unsaved = true;
 
-            if(clock_hz > 1000)
-                clock_hz = 1000;
+    ImGui::EndChild();
 
-            dirty_frequency = old != clock_hz;
-
-            if(ImGui::IsItemHovered())
-            {
-                ImGui::SetTooltip("Ctrl+Left click to edit");
-            }
-
-            ImGui::EndPopup();
-        }
-
-        if(ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows))
-        {
-            if(ImGui::IsKeyDown(GLFW_KEY_LEFT_CONTROL) && ImGui::IsKeyPressed(GLFW_KEY_S, false))
-            {
-                instance.save();
-            }
-        }
-
-        ImGui::BeginGroup();
-
-        register_editor("A ", c.regs[A_REG], is_hex, is_sign, is_modifiable);
-        register_editor("B ", c.regs[B_REG], is_hex, is_sign, is_modifiable);
-        register_editor("C ", c.regs[C_REG], is_hex, is_sign, is_modifiable);
-        register_editor("X ", c.regs[X_REG], is_hex, is_sign, is_modifiable);
-        register_editor("Y ", c.regs[Y_REG], is_hex, is_sign, is_modifiable);
-        register_editor("Z ", c.regs[Z_REG], is_hex, is_sign, is_modifiable);
-        register_editor("I ", c.regs[I_REG], is_hex, is_sign, is_modifiable);
-        register_editor("J ", c.regs[J_REG], is_hex, is_sign, is_modifiable);
-        register_editor("PC", c.regs[PC_REG], is_hex, is_sign, is_modifiable);
-        register_editor("SP", c.regs[SP_REG], is_hex, is_sign, is_modifiable);
-        register_editor("EX", c.regs[EX_REG], is_hex, is_sign, is_modifiable);
-        register_editor("IA", c.regs[IA_REG], is_hex, is_sign, is_modifiable);
+    if(error_height > 0)
+    {
+        ImGui::BeginChild("IDECHILD", ImVec2(0, error_height));
 
         if(error_string.size() > 0)
         {
-            std::map<int, std::string> error_marker;
-            error_marker[error_line + 1] = error_string;
-
-            if(dirty_errors)
-                edit->SetErrorMarkers(error_marker);
-
-            /*if(ImGui::Button("Clear Errors"))
-            {
-                error_marker.clear();
-                edit->SetErrorMarkers(error_marker);
-                error_string.clear();
-            }*/
+            ImGui::Text("%s\n", full_error_str.c_str());
         }
-        else
-        {
-            std::map<int, std::string> error_marker;
-            edit->SetErrorMarkers(error_marker);
-        }
-
-        dirty_errors = false;
-
-        ImGui::EndGroup();
-
-        ImGui::SameLine();
-
-        int ysize = ImGui::GetContentRegionAvail().y;
-
-        std::string full_error_str = "Error:\n" + error_string;
-
-        int error_height = ImGui::CalcTextSize(full_error_str.c_str()).y;
-
-        int offset = 10;
-
-        if(error_string.size() == 0)
-        {
-            offset = 0;
-            error_height = 0;
-        }
-
-        ImGui::BeginChild(("Child" + std::to_string(id)).c_str(), ImVec2(0, ysize - error_height - offset));
-
-        {
-            //std::unordered_set<int> current_pc;
-
-            std::map<int, ImVec4> current_pc;
-
-            if(c.regs[PC_REG] < translation_map.size())
-            {
-                int line = pc_to_source_line[c.regs[PC_REG]];
-
-                current_pc[line + 1] = ImVec4(0, 0x80/255.f, 0xf0/255.f, 0x40/255.f);
-            }
-
-            edit->SetHighlightLines(current_pc);
-        }
-
-        edit->Render((std::string("IDEW") + std::to_string(id)).c_str());
-
-        if(edit->IsTextChanged())
-            unsaved = true;
 
         ImGui::EndChild();
+    }
 
-        if(error_height > 0)
+    if(instance.is_autosaving && unsaved)
+    {
+        std::chrono::time_point<std::chrono::steady_clock> now = std::chrono::steady_clock::now();
+
+        double result = std::chrono::duration<double>(now - instance.autosave_timer).count();
+
+        if(result > 5)
         {
-            ImGui::BeginChild("IDECHILD", ImVec2(0, error_height));
+            instance.autosave_timer = now;
+            instance.save();
+        }
+    }
 
-            if(error_string.size() > 0)
+    ///breakpoint handling
+    {
+        c.breakpoints.clear();
+
+        std::unordered_set<int> found_breakpoints = edit->GetBreakpoints();
+
+        for(auto& i : found_breakpoints)
+        {
+            c.breakpoints.push_back(source_line_to_pc[(uint16_t)(i - 1)]);
+        }
+    }
+}
+
+void dcpu::ide::editor::render(project_instance& instance, int id)
+{
+    std::string root_name = "IDE";
+
+    if(unsaved)
+        root_name += " (unsaved)";
+
+    ImGui::SetNextWindowSize(ImVec2(500, 500), ImGuiCond_Appearing);
+
+    ImGui::Begin((root_name + "###IDE" + std::to_string(id)).c_str(), nullptr, ImGuiWindowFlags_MenuBar);
+
+    render_inline(instance, id);
+
+    ImGui::End();
+}
+
+void dcpu::ide::editor::handle_default_step()
+{
+    if(wants_step)
+    {
+        wants_step = false;
+        wants_run = false;
+        is_running = false;
+
+        if(!halted)
+            halted = halted || c.step();
+    }
+
+    if(wants_assemble || wants_reset)
+    {
+        wants_reset = false;
+        wants_assemble = false;
+        wants_run = false;
+        assemble();
+
+        is_running = false;
+        halted = false;
+    }
+
+    if(wants_run)
+    {
+        wants_run = false;
+        is_running = true;
+        halted = false;
+    }
+
+    if(wants_pause)
+    {
+        wants_pause = false;
+        is_running = false;
+    }
+
+    if(is_running)
+    {
+        ///bad
+        if(!halted)
+            halted = halted || c.step();
+    }
+}
+
+bool dcpu::ide::editor::assemble()
+{
+    auto [rinfo_opt, err] = assemble_fwd(get_text());
+
+    dirty_errors = true;
+
+    if(rinfo_opt.has_value())
+    {
+        c = dcpu::sim::CPU();
+        c.load(rinfo_opt.value().mem, 0);
+        halted = false;
+
+        translation_map = rinfo_opt.value().translation_map;
+        pc_to_source_line = rinfo_opt.value().pc_to_source_line;
+        source_line_to_pc = rinfo_opt.value().source_line_to_pc;
+
+        error_string.clear();
+        error_line = 0;
+
+        return false;
+    }
+    else
+    {
+        std::string formatted = format_error(err);
+
+        error_string = formatted;
+        error_line = err.line;
+
+        return true;
+    }
+}
+
+std::string dcpu::ide::editor::get_text() const
+{
+    std::string str = edit->GetText();
+
+    if(str.size() > 0 && str.back() == '\n')
+        str.pop_back();
+
+    return str;
+}
+
+void dcpu::ide::editor::set_text(const std::string& str)
+{
+    edit->SetText(str);
+}
+
+void dcpu::ide::reference_card::render()
+{
+    ImGui::Begin("Reference", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+
+    render_inline();
+
+    ImGui::End();
+}
+
+void dcpu::ide::reference_card::render_inline()
+{
+    auto all_instr = instruction_to_description();
+
+    std::map<std::string, std::vector<nlohmann::json>> by_category;
+
+    for(auto& i : all_instr)
+    {
+        std::string category = i["category"];
+
+        by_category[category].push_back(i);
+    }
+
+    for(auto& [cat, vec] : by_category)
+    {
+        if(ImGui::TreeNode(cat.c_str()))
+        {
+            for(nlohmann::json& data : vec)
             {
-                ImGui::Text("%s\n", full_error_str.c_str());
-            }
+                std::string name = data["name"];
+                std::string desc = data["description"];
 
-            ImGui::EndChild();
-        }
-
-        if(instance.is_autosaving && unsaved)
-        {
-            std::chrono::time_point<std::chrono::steady_clock> now = std::chrono::steady_clock::now();
-
-            double result = std::chrono::duration<double>(now - instance.autosave_timer).count();
-
-            if(result > 5)
-            {
-                instance.autosave_timer = now;
-                instance.save();
-            }
-        }
-    }
-
-    void editor::render(project_instance& instance, int id)
-    {
-        std::string root_name = "IDE";
-
-        if(unsaved)
-            root_name += " (unsaved)";
-
-        ImGui::SetNextWindowSize(ImVec2(500, 500), ImGuiCond_Appearing);
-
-        ImGui::Begin((root_name + "###IDE" + std::to_string(id)).c_str(), nullptr, ImGuiWindowFlags_MenuBar);
-
-        render_inline(instance, id);
-
-        ImGui::End();
-    }
-
-    void editor::handle_default_step()
-    {
-        if(wants_step)
-        {
-            wants_step = false;
-            wants_run = false;
-            is_running = false;
-
-            if(!halted)
-                halted = halted || c.step();
-        }
-
-        if(wants_assemble || wants_reset)
-        {
-            wants_reset = false;
-            wants_assemble = false;
-            wants_run = false;
-            assemble();
-
-            is_running = false;
-        }
-
-        if(wants_run)
-        {
-            wants_run = false;
-            is_running = true;
-        }
-
-        if(wants_pause)
-        {
-            wants_pause = false;
-            is_running = false;
-        }
-
-        if(is_running)
-        {
-            ///bad
-            if(!halted)
-                halted = halted || c.step();
-        }
-    }
-
-    bool editor::assemble()
-    {
-        auto [rinfo_opt, err] = assemble_fwd(get_text());
-
-        dirty_errors = true;
-
-        if(rinfo_opt.has_value())
-        {
-            c = dcpu::sim::CPU();
-            c.load(rinfo_opt.value().mem, 0);
-            halted = false;
-
-            translation_map = rinfo_opt.value().translation_map;
-            pc_to_source_line = rinfo_opt.value().pc_to_source_line;
-
-            error_string.clear();
-            error_line = 0;
-
-            return false;
-        }
-        else
-        {
-            std::string formatted = format_error(err);
-
-            error_string = formatted;
-            error_line = err.line;
-
-            return true;
-        }
-    }
-
-    std::string editor::get_text() const
-    {
-        std::string str = edit->GetText();
-
-        if(str.size() > 0 && str.back() == '\n')
-            str.pop_back();
-
-        return str;
-    }
-
-    void editor::set_text(const std::string& str)
-    {
-        edit->SetText(str);
-    }
-
-    void reference_card::render()
-    {
-        ImGui::Begin("Reference", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
-
-        render_inline();
-
-        ImGui::End();
-    }
-
-    void reference_card::render_inline()
-    {
-        auto all_instr = instruction_to_description();
-
-        std::map<std::string, std::vector<nlohmann::json>> by_category;
-
-        for(auto& i : all_instr)
-        {
-            std::string category = i["category"];
-
-            by_category[category].push_back(i);
-        }
-
-        for(auto& [cat, vec] : by_category)
-        {
-            if(ImGui::TreeNode(cat.c_str()))
-            {
-                for(nlohmann::json& data : vec)
+                if(ImGui::TreeNode(name.c_str()))
                 {
-                    std::string name = data["name"];
-                    std::string desc = data["description"];
+                    ImGui::Text(desc.c_str());
 
-                    if(ImGui::TreeNode(name.c_str()))
-                    {
-                        ImGui::Text(desc.c_str());
-
-                        ImGui::TreePop();
-                    }
-                    else if(ImGui::IsItemHovered())
-                    {
-                        ImGui::BeginTooltip();
-
-                        ImGui::PushTextWrapPos(400);
-
-                        ImGui::Text("%s", desc.c_str());
-
-                        ImGui::EndTooltip();
-                    }
+                    ImGui::TreePop();
                 }
+                else if(ImGui::IsItemHovered())
+                {
+                    ImGui::BeginTooltip();
 
-                ImGui::TreePop();
+                    ImGui::PushTextWrapPos(400);
+
+                    ImGui::Text("%s", desc.c_str());
+
+                    ImGui::EndTooltip();
+                }
             }
+
+            ImGui::TreePop();
         }
     }
 }
