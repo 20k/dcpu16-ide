@@ -264,6 +264,12 @@ namespace dcpu::ide
         }
 
         edit->SetLanguageDefinition(lang);
+
+        auto palette = edit->GetPalette();
+
+        palette[(int)TextEditor::PaletteIndex::Breakpoint] = IM_COL32(150, 40, 40, 128);
+
+        edit->SetPalette(palette);
     }
 
     void editor::render_inline(project_instance& instance, int id)
