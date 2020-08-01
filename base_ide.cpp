@@ -449,16 +449,18 @@ namespace dcpu::ide
         ImGui::BeginChild(("Child" + std::to_string(id)).c_str(), ImVec2(0, ysize - error_height - offset));
 
         {
-            std::unordered_set<int> current_pc;
+            //std::unordered_set<int> current_pc;
+
+            std::map<int, ImVec4> current_pc;
 
             if(c.regs[PC_REG] < translation_map.size())
             {
                 int line = pc_to_source_line[c.regs[PC_REG]];
 
-                current_pc.insert(line+1);
+                current_pc[line] = ImVec4(0, 0x80/255.f, 0xf0/255.f, 0x40/255.f);
             }
 
-            edit->SetBreakpoints(current_pc);
+            edit->SetHighlightLines(current_pc);
         }
 
         edit->Render((std::string("IDEW") + std::to_string(id)).c_str());
