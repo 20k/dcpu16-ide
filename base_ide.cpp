@@ -501,14 +501,19 @@ void dcpu::ide::editor::render_inline(project_instance& instance, int id)
 
     ///breakpoint handling
     {
-        c.breakpoints.clear();
-
         std::unordered_set<int> found_breakpoints = edit->GetBreakpoints();
+
+        stack_vector<uint16_t, 256> linear_program_counters;
 
         for(auto& i : found_breakpoints)
         {
-            c.breakpoints.push_back(source_line_to_pc[(uint16_t)(i - 1)]);
+            linear_program_counters.push_back(source_line_to_pc[(uint16_t)(i - 1)]);
+
+            if(linear_program_counters.size() >= linear_program_counters.max_size)
+                break;
         }
+
+        c.set_breakpoints(linear_program_counters);
     }
 }
 
