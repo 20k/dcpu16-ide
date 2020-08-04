@@ -8,6 +8,7 @@
 #include <iostream>
 #include <GLFW/glfw3.h>
 #include <filesystem>
+#include <imgui_club/imgui_memory_editor/imgui_memory_editor.h>
 
 std::string dcpu::ide::format_error(const error_info& err)
 {
@@ -622,6 +623,16 @@ std::string dcpu::ide::editor::get_text() const
 void dcpu::ide::editor::set_text(const std::string& str)
 {
     edit->SetText(str);
+}
+
+dcpu::ide::memory_editor::memory_editor()
+{
+    edit = new MemoryEditor;
+}
+
+dcpu::ide::memory_editor::~memory_editor()
+{
+
 }
 
 void dcpu::ide::reference_card::render()

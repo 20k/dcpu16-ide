@@ -7,6 +7,7 @@
 #include <chrono>
 
 struct TextEditor;
+struct MemoryEditor;
 
 struct error_info;
 
@@ -79,6 +80,14 @@ namespace dcpu
 
             std::string get_text() const;
             void set_text(const std::string& str);
+        };
+
+        struct memory_editor
+        {
+            MemoryEditor* edit = nullptr;
+
+            memory_editor();
+            ~memory_editor();
         };
 
         struct project_instance
