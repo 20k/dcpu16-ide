@@ -22,3 +22,6 @@
 [submodule "deps/toml"]
 	path = deps/toml
 	url = https://github.com/ToruNiina/toml11
+[submodule "deps/imgui_club"]
+	path = deps/imgui_club
+	url = https://github.com/20k/imgui_club
