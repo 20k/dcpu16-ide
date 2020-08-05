@@ -247,6 +247,19 @@ dcpu::ide::editor::editor()
     memory_edit = new MemoryEditor;
     memory_edit->Cols = 4;
 
+    memory_edit->HighlightFn = [](void* my_editor, const ImU16* data, size_t off)
+    {
+        if(my_editor == nullptr)
+            return false;
+
+        editor& edit = *(editor*)my_editor;
+
+        size_t pc_start = edit.c.regs[PC_REG];
+        size_t pc_end = pc_start + get_instruction_length(edit.c.mem[edit.c.regs[PC_REG]]);
+
+        return (off >= pc_start && off < pc_end) || ((off == edit.c.regs[SP_REG]) && edit.c.regs[SP_REG] != 0);
+    };
+
     auto lang = TextEditor::LanguageDefinition::CPlusPlus();
     lang.mCaseSensitive = false;
     lang.mSingleLineComment = ";";
@@ -547,7 +560,7 @@ void dcpu::ide::editor::render(project_instance& instance, int id)
 
 void dcpu::ide::editor::render_memory_editor_inline(project_instance& instance, int id)
 {
-    memory_edit->DrawContents(&c.mem[0], c.mem.size(), 0);
+    memory_edit->DrawContents(this, &c.mem[0], c.mem.size(), 0);
 }
 
 void dcpu::ide::editor::handle_default_step()
