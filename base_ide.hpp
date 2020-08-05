@@ -43,6 +43,7 @@ namespace dcpu
         {
             bool unsaved = false;
             TextEditor* edit = nullptr;
+            MemoryEditor* memory_edit = nullptr;
             dcpu::sim::CPU c;
             stack_vector<uint16_t, MEM_SIZE> translation_map;
             stack_vector<uint16_t, MEM_SIZE> pc_to_source_line;
@@ -60,6 +61,7 @@ namespace dcpu
             bool is_hex = false;
             bool is_sign = false;
             bool is_modifiable = false; ///registers are editable
+            bool is_rendering_mem_editor = false;
 
             ///unsupported within the ide atm, being used for game. This is a TODO
             int clock_hz = 1000;
@@ -75,19 +77,14 @@ namespace dcpu
 
             void render(project_instance& instance, int id);
             void render_inline(project_instance& instance, int id);
+
+            void render_memory_editor_inline(project_instance& instance, int id);
+
             void handle_default_step();
             bool assemble();
 
             std::string get_text() const;
             void set_text(const std::string& str);
-        };
-
-        struct memory_editor
-        {
-            MemoryEditor* edit = nullptr;
-
-            memory_editor();
-            ~memory_editor();
         };
 
         struct project_instance

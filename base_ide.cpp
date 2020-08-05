@@ -244,6 +244,9 @@ void dcpu::ide::settings::load(const std::string& file)
 dcpu::ide::editor::editor()
 {
     edit = new TextEditor;
+    memory_edit = new MemoryEditor;
+    memory_edit->Cols = 4;
+
     auto lang = TextEditor::LanguageDefinition::CPlusPlus();
     lang.mCaseSensitive = false;
     lang.mSingleLineComment = ";";
@@ -338,6 +341,15 @@ void dcpu::ide::editor::render_inline(project_instance& instance, int id)
                 is_modifiable = !is_modifiable;
             }
 
+            std::string is_mem_editor = is_rendering_mem_editor ? "[x] Mem-Editor###memeditorid" : "[ ] Mem-Editor###memeditorid";
+
+            is_mem_editor += std::to_string(id);
+
+            if(ImGui::MenuItem(is_mem_editor.c_str()))
+            {
+                is_rendering_mem_editor = !is_rendering_mem_editor;
+            }
+
             std::string is_autosave_str = instance.is_autosaving ? "[x] Autosave###autosaveid" : "[ ] Autosave###autosaveid";
 
             is_autosave_str += std::to_string(id);
@@ -346,7 +358,6 @@ void dcpu::ide::editor::render_inline(project_instance& instance, int id)
             {
                 instance.is_autosaving = !instance.is_autosaving;
             }
-
             if(ImGui::MenuItem("Frequency-Editor"))
             {
                 popup = true;
@@ -534,6 +545,11 @@ void dcpu::ide::editor::render(project_instance& instance, int id)
     ImGui::End();
 }
 
+void dcpu::ide::editor::render_memory_editor_inline(project_instance& instance, int id)
+{
+    memory_edit->DrawContents(&c.mem[0], c.mem.size(), 0);
+}
+
 void dcpu::ide::editor::handle_default_step()
 {
     if(wants_step)
@@ -623,16 +639,6 @@ std::string dcpu::ide::editor::get_text() const
 void dcpu::ide::editor::set_text(const std::string& str)
 {
     edit->SetText(str);
-}
-
-dcpu::ide::memory_editor::memory_editor()
-{
-    edit = new MemoryEditor;
-}
-
-dcpu::ide::memory_editor::~memory_editor()
-{
-
 }
 
 void dcpu::ide::reference_card::render()
