@@ -56,13 +56,16 @@ void dcpu::ide::project::save()
 
     toml::value val;
 
-    try
+    if(project_data.size() > 0)
     {
-        val = toml::parse(project_data);
-    }
-    catch(...)
-    {
+        try
+        {
+            val = toml::parse(project_data);
+        }
+        catch(...)
+        {
 
+        }
     }
 
     val["files"] = assembly_files;
