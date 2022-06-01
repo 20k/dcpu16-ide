@@ -124,7 +124,7 @@ nlohmann::json instruction_to_description()
 {"name":"ADD", "cycle":2, "class":"a", "opcode":2, "category":"arithmetic", "signed":false, "description":"ADD b, a : Sets b to b+a, sets EX to 0x0001 on overflow"},
 {"name":"SUB", "cycle":2, "class":"a", "opcode":3, "category":"arithmetic", "signed":false, "description":"SUB b, a : Sets b to b-a, sets EX to 0xffff on underflow"},
 {"name":"MUL", "cycle":2, "class":"a", "opcode":4, "category":"arithmetic", "signed":false, "description":"MUL b, a : Sets b to b * a, sets EX to ((b*a)>>16)&0xffff. (b, a) are unsigned"},
-{"name":"MLI", "cycle":2, "class":"a", "opcode":5, "category":"arithmetic", "signed":true, "description":"MUL b, a : Sets b to b * a, sets EX to ((b*a)>>16)&0xffff. (b, a) are signed"},
+{"name":"MLI", "cycle":2, "class":"a", "opcode":5, "category":"arithmetic", "signed":true, "description":"MLI b, a : Sets b to b * a, sets EX to ((b*a)>>16)&0xffff. (b, a) are signed"},
 {"name":"DIV", "cycle":3, "class":"a", "opcode":6, "category":"arithmetic", "signed":false, "description":"DIV b, a : Sets b to b/a, sets EX to ((b<<16)/a)&0xffff. If a == 0, sets b and EX to 0. (b, a) are unsigned"},
 {"name":"DVI", "cycle":3, "class":"a", "opcode":7, "category":"arithmetic", "signed":true, "description":"DVI b, a : Like DIV. (b, a) are signed. Rounds towards 0"},
 {"name":"MOD", "cycle":3, "class":"a", "opcode":8, "category":"arithmetic", "signed":false, "description":"MOD b, a : Sets b to b%a. If a==0, sets b to 0 instead"},
