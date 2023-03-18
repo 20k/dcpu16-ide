@@ -607,33 +607,45 @@ void dcpu::ide::editor::handle_default_step()
     }
 }
 
+void dcpu::ide::editor::assemble_from(const return_info& inf)
+{
+    dirty_errors = true;
+
+    c = dcpu::sim::CPU();
+    c.load(inf.mem, 0);
+    halted = false;
+
+    translation_map = inf.translation_map;
+    pc_to_source_line = inf.pc_to_source_line;
+    source_line_to_pc = inf.source_line_to_pc;
+
+    error_string.clear();
+    error_line = 0;
+}
+
+void dcpu::ide::editor::set_errors(const error_info& inf)
+{
+    dirty_errors = true;
+
+    std::string formatted = format_error(inf);
+
+    error_string = formatted;
+    error_line = inf.line;
+}
+
 bool dcpu::ide::editor::assemble()
 {
     auto [rinfo_opt, err] = assemble_fwd(get_text());
 
-    dirty_errors = true;
-
     if(rinfo_opt.has_value())
     {
-        c = dcpu::sim::CPU();
-        c.load(rinfo_opt.value().mem, 0);
-        halted = false;
-
-        translation_map = rinfo_opt.value().translation_map;
-        pc_to_source_line = rinfo_opt.value().pc_to_source_line;
-        source_line_to_pc = rinfo_opt.value().source_line_to_pc;
-
-        error_string.clear();
-        error_line = 0;
+        assemble_from(rinfo_opt.value());
 
         return false;
     }
     else
     {
-        std::string formatted = format_error(err);
-
-        error_string = formatted;
-        error_line = err.line;
+        set_errors(err);
 
         return true;
     }

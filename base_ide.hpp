@@ -10,6 +10,7 @@ struct TextEditor;
 struct MemoryEditor;
 
 struct error_info;
+struct return_info;
 
 ///TODO: https://github.com/ocornut/imgui_club/tree/master/imgui_memory_editor
 namespace dcpu
@@ -81,6 +82,10 @@ namespace dcpu
             void render_memory_editor_inline(project_instance& instance, int id);
 
             void handle_default_step();
+
+            void assemble_from(const return_info& inf);
+            void set_errors(const error_info& inf);
+
             bool assemble();
 
             virtual bool step()
