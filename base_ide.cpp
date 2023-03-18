@@ -531,7 +531,7 @@ void dcpu::ide::editor::render_inline(project_instance& instance, int id)
     {
         std::unordered_set<int> found_breakpoints = edit->GetBreakpoints();
 
-        heap_vector<uint16_t> linear_program_counters;
+        std::vector<uint16_t> linear_program_counters;
 
         for(auto& i : found_breakpoints)
         {
@@ -572,7 +572,7 @@ void dcpu::ide::editor::handle_default_step()
         is_running = false;
 
         if(!halted)
-            halted = halted || c.step();
+            halted = halted || step();
     }
 
     if(wants_assemble || wants_reset)
@@ -603,7 +603,7 @@ void dcpu::ide::editor::handle_default_step()
     {
         ///bad
         if(!halted)
-            halted = halted || c.step();
+            halted = halted || step();
     }
 }
 

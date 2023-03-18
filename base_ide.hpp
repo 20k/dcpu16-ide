@@ -83,6 +83,11 @@ namespace dcpu
             void handle_default_step();
             bool assemble();
 
+            virtual bool step()
+            {
+                return c.step();
+            }
+
             std::string get_text() const;
             void set_text(const std::string& str);
         };
