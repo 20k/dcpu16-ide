@@ -138,8 +138,6 @@ namespace dcpu
 
                 for(int i=0; i < (int)editors.size(); i++)
                 {
-                    std::cout << "Get text " << editors[i].get_text() << std::endl;
-
                     proj.assembly_data[i] = editors[i].get_text();
 
                     editors[i].unsaved = false;
