@@ -86,7 +86,7 @@ namespace dcpu
             void assemble_from(const return_info& inf);
             void set_errors(const error_info& inf);
 
-            bool assemble();
+            virtual bool assemble();
 
             virtual bool step()
             {
