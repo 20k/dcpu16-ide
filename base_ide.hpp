@@ -38,7 +38,7 @@ namespace dcpu
             void load(const std::string& file);
         };
 
-        struct project_instance;
+        struct project_instance_base;
 
         struct editor
         {
@@ -56,6 +56,7 @@ namespace dcpu
             bool wants_pause = false;
             bool wants_assemble = false;
             bool wants_reset = false;
+            bool wants_save = false;
 
             bool is_running = false;
 
@@ -76,10 +77,10 @@ namespace dcpu
 
             editor();
 
-            void render(project_instance& instance, int id);
-            void render_inline(project_instance& instance, int id);
+            void render(project_instance_base& instance, int id);
+            void render_inline(project_instance_base& instance, int id);
 
-            void render_memory_editor_inline(project_instance& instance, int id);
+            void render_memory_editor_inline(project_instance_base& instance, int id);
 
             void handle_default_step();
 
@@ -95,18 +96,57 @@ namespace dcpu
 
             std::string get_text() const;
             void set_text(const std::string& str);
+
+            virtual ~editor(){}
         };
 
-        struct project_instance
+        struct project_instance_base
         {
-            std::chrono::time_point<std::chrono::steady_clock> autosave_timer = std::chrono::steady_clock::now();
-            bool is_autosaving = true;
             project proj;
 
-            std::vector<editor> editors;
+            std::chrono::time_point<std::chrono::steady_clock> autosave_timer = std::chrono::steady_clock::now();
+            bool is_autosaving = true;
 
-            void load(const std::string& file);
-            void save();
+            virtual void load(const std::string& file){}
+            virtual void save(){}
+
+            virtual ~project_instance_base(){}
+        };
+
+        template<typename T = editor>
+        struct project_instance : project_instance_base
+        {
+            std::vector<T> editors;
+
+            virtual void load(const std::string& file) override
+            {
+                proj = project();
+                proj.load(file);
+
+                editors.clear();
+
+                for(int i=0; i < (int)proj.assembly_data.size(); i++)
+                {
+                    T& edit = editors.emplace_back();
+                    edit.set_text(proj.assembly_data[i]);
+                }
+            }
+
+            virtual void save() override
+            {
+                assert(editors.size() == proj.assembly_data.size());
+
+                for(int i=0; i < (int)editors.size(); i++)
+                {
+                    std::cout << "Get text " << editors[i].get_text() << std::endl;
+
+                    proj.assembly_data[i] = editors[i].get_text();
+
+                    editors[i].unsaved = false;
+                }
+
+                proj.save();
+            }
         };
 
         struct reference_card

@@ -87,34 +87,6 @@ void dcpu::ide::project::save()
     }
 }
 
-void dcpu::ide::project_instance::load(const std::string& file)
-{
-    proj = project();
-    proj.load(file);
-
-    editors.clear();
-
-    for(int i=0; i < (int)proj.assembly_data.size(); i++)
-    {
-        dcpu::ide::editor& edit = editors.emplace_back();
-        edit.set_text(proj.assembly_data[i]);
-    }
-}
-
-void dcpu::ide::project_instance::save()
-{
-    assert(editors.size() == proj.assembly_data.size());
-
-    for(int i=0; i < (int)editors.size(); i++)
-    {
-        proj.assembly_data[i] = editors[i].get_text();
-
-        editors[i].unsaved = false;
-    }
-
-    proj.save();
-}
-
 nlohmann::json instruction_to_description()
 {
     static nlohmann::json data = nlohmann::json::parse(
@@ -290,7 +262,7 @@ dcpu::ide::editor::editor()
     edit->SetPalette(palette);
 }
 
-void dcpu::ide::editor::render_inline(project_instance& instance, int id)
+void dcpu::ide::editor::render_inline(project_instance_base& instance, int id)
 {
     std::string cycle_string = "Cycles: " + std::to_string(c.cycle_count);
 
@@ -422,6 +394,12 @@ void dcpu::ide::editor::render_inline(project_instance& instance, int id)
         }
     }
 
+    if(wants_save)
+    {
+        instance.save();
+        wants_save = false;
+    }
+
     ImGui::BeginGroup();
 
     register_editor("A ", c.regs[A_REG], is_hex, is_sign, is_modifiable);
@@ -542,7 +520,7 @@ void dcpu::ide::editor::render_inline(project_instance& instance, int id)
     }
 }
 
-void dcpu::ide::editor::render(project_instance& instance, int id)
+void dcpu::ide::editor::render(project_instance_base& instance, int id)
 {
     std::string root_name = "IDE";
 
@@ -558,7 +536,7 @@ void dcpu::ide::editor::render(project_instance& instance, int id)
     ImGui::End();
 }
 
-void dcpu::ide::editor::render_memory_editor_inline(project_instance& instance, int id)
+void dcpu::ide::editor::render_memory_editor_inline(project_instance_base& instance, int id)
 {
     memory_edit->DrawContents(this, &c.mem[0], c.mem.size(), 0);
 }
