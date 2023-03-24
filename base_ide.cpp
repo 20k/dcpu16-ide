@@ -522,14 +522,14 @@ void dcpu::ide::editor::render_inline(project_instance_base& instance, int id)
 
 void dcpu::ide::editor::render(project_instance_base& instance, int id)
 {
-    std::string root_name = "IDE";
+    std::string root_name = "IDE " + file_name;
 
     if(unsaved)
         root_name += " (unsaved)";
 
     ImGui::SetNextWindowSize(ImVec2(500, 500), ImGuiCond_Appearing);
 
-    ImGui::Begin((root_name + "###IDE" + std::to_string(id)).c_str(), nullptr, ImGuiWindowFlags_MenuBar);
+    ImGui::Begin((root_name + "###IDE" + std::to_string(id) + "_" + file_name).c_str(), nullptr, ImGuiWindowFlags_MenuBar);
 
     render_inline(instance, id);
 

@@ -42,6 +42,7 @@ namespace dcpu
 
         struct editor
         {
+            std::string file_name;
             bool unsaved = false;
             TextEditor* edit = nullptr;
             MemoryEditor* memory_edit = nullptr;
@@ -128,7 +129,8 @@ namespace dcpu
                 for(int i=0; i < (int)proj.assembly_data.size(); i++)
                 {
                     T& edit = editors.emplace_back();
-                    edit.set_text(proj.assembly_data[i]);
+                    edit.set_text(proj.assembly_data.at(i));
+                    edit.file_name = proj.assembly_files.at(i);
                 }
             }
 
