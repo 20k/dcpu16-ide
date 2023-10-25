@@ -132,7 +132,18 @@ nlohmann::json instruction_to_description()
 {"name":"HWI", "cycle":4, "class":"b", "opcode":18, "category":"hardware", "signed":false, "description":"HWI a : Sends an interrupt to hardware a"},
 {"name":"IFW", "cycle":3, "class":"b", "opcode":26, "category":"control", "signed":false, "description":"IFW a : Performs next instruction only if the channel identified by a has any value waiting to be written"},
 {"name":"IFR", "cycle":3, "class":"b", "opcode":27, "category":"control", "signed":false, "description":"IFR a : Performs next instruction only if the channel identified by a has any value waiting to be read"},
-{"name":"BRK", "cycle":1, "class":"c", "opcode":0, "category":"control", "signed":false, "description":"BRK : Terminates execution"}
+{"name":"BRK", "cycle":1, "class":"c", "opcode":0, "category":"control", "signed":false, "description":"BRK : Terminates execution"},
+{"name":"A", "cycle":0, "class":"r","opcode":0, "category":"register", "signed":false, "description":"A: Generic register with no special semantics"},
+{"name":"B", "cycle":0, "class":"r","opcode":1, "category":"register", "signed":false, "description":"B: Generic register with no special semantics"},
+{"name":"C", "cycle":0, "class":"r","opcode":2, "category":"register", "signed":false, "description":"C: Generic register with no special semantics"},
+{"name":"X", "cycle":0, "class":"r","opcode":3, "category":"register", "signed":false, "description":"X: Generic register with no special semantics"},
+{"name":"Y", "cycle":0, "class":"r","opcode":4, "category":"register", "signed":false, "description":"Y: Generic register with no special semantics"},
+{"name":"Z", "cycle":0, "class":"r","opcode":5, "category":"register", "signed":false, "description":"Z: Generic register with no special semantics"},
+{"name":"I", "cycle":0, "class":"r","opcode":6, "category":"register", "signed":false, "description":"I: Generic register. STI increments I and J by 1 as a side effect, and STD decrements I and J by 1 as a side effect"},
+{"name":"J", "cycle":0, "class":"r","opcode":7, "category":"register", "signed":false, "description":"J: Generic register. STI increments I and J by 1 as a side effect, and STD decrements I and J by 1 as a side effect"},
+{"name":"SP", "cycle":0, "class":"r","opcode":27, "category":"register", "signed":false, "description":"SP: Stack Pointer. Often accessed with PEEK / [SP], PUSH / [--SP], POP / [SP++], and PICK n / [SP + next word] to create a reverse stack"},
+{"name":"PC", "cycle":0, "class":"r","opcode":28, "category":"register", "signed":false, "description":"PC: Program Counter. The address of the current word that the DCPU is reading from. Cannot be used in an address lookup like [PC]"},
+{"name":"EX", "cycle":0, "class":"r","opcode":29, "category":"register", "signed":false, "description":"EX: Extra/Excess. Contains overflow and underflow information, and is set for the following instructions: ADD, SUB, MUL, MLI, DIV, DVI, SHR, ASR, SHL, ADX and SBX. ADX and SBX both read from EX. Cannot be used in an address lookup like [EX]"}
 ]
 )end"
     );
@@ -248,6 +259,9 @@ dcpu::ide::editor::editor()
 
     for(auto& i : mapping)
     {
+        if(i["category"] == "register")
+            continue;
+
         TextEditor::Identifier id;
         id.mDeclaration = i["description"];
         lang.mIdentifiers.insert(std::make_pair(i["name"], id));
